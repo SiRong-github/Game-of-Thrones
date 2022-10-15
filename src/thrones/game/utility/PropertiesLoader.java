@@ -27,6 +27,10 @@ public class PropertiesLoader {
 		return properties.getProperty(field);
 	}
 	
+	public int getSeed() {
+		return ((Number)Integer.parseInt(getProperty("seed"))).intValue();
+	}
+	
 	private void initProperty() {
 		properties.setProperty("seed", "30006");
 		properties.setProperty("watchingTime", "5000");
