@@ -3,14 +3,14 @@ package thrones.game.utility;
 import java.util.Properties;
 import java.io.*;
 
-public class PropertiesLoader {
+public class GoTPropertiesLoader {
 	private Properties properties = new Properties();
 	
-	public PropertiesLoader() {
+	public GoTPropertiesLoader() {
 		initProperty();
 	}
 	
-	public PropertiesLoader(String file) {
+	public GoTPropertiesLoader(String file) {
 		initProperty();
 		try {
 			File f = new File(file);
