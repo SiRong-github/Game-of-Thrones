@@ -12,6 +12,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import thrones.game.card.*;
+import thrones.game.player.GoTPlayer;
+import thrones.game.player.GoTSimplePlayerFactory;
+import thrones.game.player.GoTTeam;
+import thrones.game.utility.GoTPropertiesLoader;
 
 @SuppressWarnings("serial")
 public class GameOfThrones extends CardGame {
@@ -49,6 +53,9 @@ public class GameOfThrones extends CardGame {
 //        }
 //    }
 
+	
+	private GoTPropertiesLoader properties;
+	
     /*
     Canonical String representations of Suit, Rank, Card, and Hand
     */
@@ -219,6 +226,23 @@ public class GameOfThrones extends CardGame {
                 }
             });
         }
+        
+        // Create player and give them hand of cards
+        ArrayList<GoTPlayer> players = new ArrayList<>();
+        for (int i = 0; i < nbPlayers; i++) {
+        	players.add(GoTSimplePlayerFactory.getInstance().getPlayer(properties.getPlayerType(i)));
+        }
+        // Create teams and send players to them
+        ArrayList<GoTTeam> teams = new ArrayList<>();
+        teams.add(new GoTTeam());
+        teams.add(new GoTTeam());
+        int currentTeam = 0;
+        for (int i = 0; i < nbPlayers; i++) {
+        	currentTeam = nbPlayers%teams.size();
+        	teams.get(currentTeam).addPlayer(players.get(i));
+        }
+        // Create round manager and send teams to it
+        
         // graphics
         RowLayout[] layouts = new RowLayout[nbPlayers];
         for (int i = 0; i < nbPlayers; i++) {
@@ -437,8 +461,11 @@ public class GameOfThrones extends CardGame {
         delay(watchingTime);
     }
 
-    public GameOfThrones() {
+    public GameOfThrones(GoTPropertiesLoader properties) {
+    	// super(prop.getWidth(), prop.getHeight(), prop.getStatusHeight());
         super(700, 700, 30);
+        
+        this.properties = properties;
 
         setTitle("Game of Thrones (V" + version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
         setStatusText("Initializing...");
@@ -482,10 +509,12 @@ public class GameOfThrones extends CardGame {
 			  seed = new Random().nextInt(); // so randomise
         }
         */
-        GameOfThrones.seed = 130006;
+    	GoTPropertiesLoader properties = new GoTPropertiesLoader("properties/got.properties");
+        GameOfThrones.seed = properties.getSeed();
         System.out.println("Seed = " + seed);
         GameOfThrones.random = new Random(seed);
-        new GameOfThrones();
+        
+        new GameOfThrones(properties);
     }
 
 }

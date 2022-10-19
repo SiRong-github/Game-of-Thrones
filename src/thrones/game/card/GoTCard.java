@@ -1,5 +1,12 @@
 package thrones.game.card;
 
-public abstract class GoTCard {
+import ch.aplu.jcardgame.Card;
+import ch.aplu.jcardgame.Deck;
+
+public class GoTCard extends Card{
+
+	public GoTCard(Deck deck, int cardNb) {
+		super(deck, cardNb);
+	}
 
 }

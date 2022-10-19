@@ -1,5 +1,8 @@
 package thrones.game.player;
 
-public abstract class GoTPlayer {
+import ch.aplu.jcardgame.Hand;
 
+public abstract class GoTPlayer {
+	protected Hand hand;
+	
 }

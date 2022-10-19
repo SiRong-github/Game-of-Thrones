@@ -1,5 +1,9 @@
 package thrones.game.card;
 
-public class GoTAttack extends GoTCharacterDecorator{
+import ch.aplu.jcardgame.Card;
 
+public class GoTAttack extends GoTCharacterDecorator{
+	public GoTAttack() {
+
+	}
 }

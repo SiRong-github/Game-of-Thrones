@@ -1,5 +1,7 @@
 package thrones.game.player;
 
-public class GoTHumanPlayer extends GoTPlayer {
+import ch.aplu.jcardgame.Hand;
 
+public class GoTHumanPlayer extends GoTPlayer {
+	
 }

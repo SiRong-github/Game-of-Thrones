@@ -1,6 +1,9 @@
 package thrones.game.utility;
 
 import java.util.Properties;
+
+import thrones.game.player.GoTPlayerType;
+
 import java.io.*;
 
 public class GoTPropertiesLoader {
@@ -30,6 +33,18 @@ public class GoTPropertiesLoader {
 	public int getSeed() {
 		return ((Number)Integer.parseInt(getProperty("seed"))).intValue();
 	}
+	
+	/**
+	 * 
+	 * @return player type, default random player
+	 */
+	public GoTPlayerType getPlayerType(int index) {
+		if (index >= 0 && index <= 4){
+			return GoTPlayerType.toType("player."+index);
+		}
+		return GoTPlayerType.GOT_RANDOM;
+	}
+	
 	
 	private void initProperty() {
 		properties.setProperty("seed", "30006");
