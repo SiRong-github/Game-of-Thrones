@@ -18,11 +18,4 @@ public enum Suit {
 
     public boolean isMagic(){ return gotsuit == GoTSuit.MAGIC; }
     
-    public String canonical() {
-    	return gotsuit.toString().substring(0, 1);
-    }
-    
-    public static String canonical(Suit s) {
-    	return s.toString().substring(0, 1); 
-    }
 }

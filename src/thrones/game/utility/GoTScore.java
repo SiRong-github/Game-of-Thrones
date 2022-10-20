@@ -10,44 +10,60 @@ import thrones.game.GameOfThrones;
 public class GoTScore {
 	
     private Actor[] scoreActors = {null, null, null, null};
-    private int[] scores;
+    private int[] scores = new int[GoTData.nbPlayers];
 
-    
-    private int nbPlayers;
     private GameOfThrones got;
+    private GoTPiles gotPiles;
     
-    public GoTScore(GameOfThrones got, int nbPlayers) {
-    	this.nbPlayers = nbPlayers;
-    	this.scores = new int[nbPlayers];
+    public GoTScore(GameOfThrones got, GoTPiles gotPiles) {
+    	this.gotPiles = gotPiles;
     	this.got = got;
     }
 
-    private void initScore() {
-        for (int i = 0; i < nbPlayers; i++) {
+    public void initScore() {
+        for (int i = 0; i < GoTData.nbPlayers; i++) {
              scores[i] = 0;
             String text = "P" + i + "-0";
-            scoreActors[i] = new TextActor(text, Color.WHITE, got.bgColor, got.bigFont);
+            scoreActors[i] = new TextActor(text, Color.WHITE, got.bgColor, GoTData.bigFont);
             got.addActor(scoreActors[i], GoTData.scoreLocations[i]);
         }
 
         String text = "Attack: 0 - Defence: 0";
-        for (int i = 0; i < pileTextActors.length; i++) {
-            pileTextActors[i] = new TextActor(text, Color.WHITE, got.bgColor, got.smallFont);
-            addActor(pileTextActors[i], GoTData.pileStatusLocations[i]);
+        for (int i = 0; i < GoTData.pileSize; i++) {
+            gotPiles.updatePileText(i, new TextActor(text, Color.WHITE, got.bgColor, GoTData.smallFont));
         }
     }
 
-    private void updateScore(int player) {
+    public void updateScore(int player) {
         got.removeActor(scoreActors[player]);
         String text = "P" + player + "-" + scores[player];
-        scoreActors[player] = new TextActor(text, Color.WHITE, got.bgColor, got.bigFont);
-        addActor(scoreActors[player], scoreLocations[player]);
+        scoreActors[player] = new TextActor(text, Color.WHITE, got.bgColor, GoTData.bigFont);
+        got.addActor(scoreActors[player], GoTData.scoreLocations[player]);
     }
 
-    private void updateScores() {
-        for (int i = 0; i < nbPlayers; i++) {
+    public void updateScores() {
+        for (int i = 0; i < GoTData.nbPlayers; i++) {
             updateScore(i);
         }
-        System.out.println(playerTeams[0] + " score = " + scores[0] + "; " + playerTeams[1] + " score = " + scores[1]);
+        System.out.println(GoTData.playerTeams[0] + " score = " + scores[0] + "; " + GoTData.playerTeams[1] + " score = " + scores[1]);
+    }
+    
+    public void showGameResult() {
+    	String text;
+        if (scores[0] > scores[1]) {
+            text = "Players 0 and 2 won.";
+        } else if (scores[0] == scores[1]) {
+            text = "All players drew.";
+        } else {
+            text = "Players 1 and 3 won.";
+        }
+        System.out.println("Result: " + text);
+        got.setStatusText(text);
+    }
+    
+    public void addScore(int playerIndex, int score) {
+    	if (playerIndex >= 0 && playerIndex < scores.length) {
+    		scores[playerIndex] += score;
+    	}
     }
 }

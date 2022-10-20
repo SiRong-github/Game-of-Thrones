@@ -18,12 +18,15 @@ public class GoTPropertiesLoader {
 		try {
 			File f = new File(file);
 			FileInputStream ins = new FileInputStream(f);
-				properties.load(ins);
+			properties.load(ins);
 		} catch (FileNotFoundException e) {
 			System.err.println("Property file not found: " + file);
 		} catch (IOException e) {
 			System.err.println("Property loading fail");
 		}
+		
+		GoTData.watchingTime = getWatchingTime();
+		GoTUtilities.initializeRandom(getSeed());
 	}
 	
 	public String getProperty(String field) {
@@ -32,6 +35,10 @@ public class GoTPropertiesLoader {
 	
 	public int getSeed() {
 		return ((Number)Integer.parseInt(getProperty("seed"))).intValue();
+	}
+	
+	public int getWatchingTime() {
+		return ((Number)Integer.parseInt(properties.getProperty("watchingTime"))).intValue();
 	}
 	
 	/**
