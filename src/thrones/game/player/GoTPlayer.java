@@ -33,6 +33,7 @@ public abstract class GoTPlayer {
 	}
 	
 	public abstract Optional<Card> getCorrectSuit(boolean isCharacter);
+
 	public abstract Hand selectPile(GoTPiles piles);
 	
     protected Optional<Card> pickACorrectSuit(boolean isCharacter) {
@@ -78,9 +79,7 @@ public abstract class GoTPlayer {
         }
         return selected;
     }
-    
-   
-    
+
     public Optional<Card> getSelectedCard(){
     	return selected;
     }

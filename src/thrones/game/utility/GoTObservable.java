@@ -16,4 +16,10 @@ public abstract class GoTObservable {
 	public final void removeObserver(GoTObserver o) {
 		observers.remove(o);
 	}
+	
+	protected final void update() {
+		for(GoTObserver o: observers) {
+			o.update(this);
+		}
+	}
 }

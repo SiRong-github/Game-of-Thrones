@@ -151,6 +151,8 @@ public class GameOfThrones extends CardGame {
             remainingTurns--;
         }
 
+        /*********************************************/
+        // TODO: Refactor the whole block underneath
         // 3: calculate winning & update scores for players
         gotPiles.updatePileRanks();
         int[] pile0Ranks = gotPiles.calculatePileRanks(0);
