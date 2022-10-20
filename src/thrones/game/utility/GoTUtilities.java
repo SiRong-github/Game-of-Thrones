@@ -46,4 +46,8 @@ public class GoTUtilities {
         int x = random.nextInt(hand.getNumberOfCards());
         return hand.get(x);
     }
+    
+    public static int getPlayerIndex(int index) {
+        return index % GoTData.nbPlayers;
+    }
 }

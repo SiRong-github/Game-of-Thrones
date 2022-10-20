@@ -29,6 +29,7 @@ public class GoTData {
     
     public static Deck deck = new Deck(Suit.values(), Rank.values(), "cover");
     public static final String[] playerTeams = { "[Players 0 & 2]", "[Players 1 & 3]"};
+    public static boolean[] humanPlayers = { false, false, false, false};
     
     public static final Location[] handLocations = {
             new Location(350, 625),

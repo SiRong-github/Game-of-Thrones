@@ -26,12 +26,9 @@ public class GameOfThrones extends CardGame {
 	private GoTPropertiesLoader properties;
 	private GoTScore gotScore;
 	private GoTPiles gotPiles;
+    private int nextStartingPlayer = GoTUtilities.getRandom().nextInt(GoTData.nbPlayers);
+    private ArrayList<GoTPlayer> players;
     
-    // static public int seed;
-    // static Random random;
-
-    // return random Card from Hand
-
     private void dealingOut(Hand[] hands, int nbPlayers, int nbCardsPerPlayer) {
         Hand pack = GoTData.deck.toHand(false);
         assert pack.getNumberOfCards() == 52 : " Starting pack is not 52 cards.";
@@ -67,19 +64,10 @@ public class GameOfThrones extends CardGame {
     }
 
 
-    // private final int watchingTime = 5000;
-    private Hand[] hands;
-    // private Hand[] piles;
-    
-    private int nextStartingPlayer = GoTUtilities.getRandom().nextInt(GoTData.nbPlayers);
-
-    // boolean[] humanPlayers = { true, false, false, false};
-    boolean[] humanPlayers = { false, false, false, false};
-
-    private Optional<Card> selected;
 
     
     private void setupGame() {
+    	Hand[] hands = new Hand[GoTData.nbPlayers];
         hands = new Hand[GoTData.nbPlayers];
         for (int i = 0; i < GoTData.nbPlayers; i++) {
             hands[i] = new Hand(GoTData.deck);
@@ -90,25 +78,12 @@ public class GameOfThrones extends CardGame {
             hands[i].sort(Hand.SortType.SUITPRIORITY, true);
             System.out.println("hands[" + i + "]: " + GoTUtilities.canonical(hands[i]));
         }
-
-        for (final Hand currentHand : hands) {
-            // Set up human player for interaction
-            currentHand.addCardListener(new CardAdapter() {
-                public void leftDoubleClicked(Card card) {
-                    selected = Optional.of(card);
-                    currentHand.setTouchEnabled(false);
-                }
-                public void rightClicked(Card card) {
-                    selected = Optional.empty(); // Don't care which card we right-clicked for player to pass
-                    currentHand.setTouchEnabled(false);
-                }
-            });
-        }
         
         // Create player and give them hand of cards
-        ArrayList<GoTPlayer> players = new ArrayList<>();
+        this.players = new ArrayList<>();
         for (int i = 0; i < GoTData.nbPlayers; i++) {
-        	players.add(GoTSimplePlayerFactory.getInstance().getPlayer(properties.getPlayerType(i)));
+        	players.add(GoTSimplePlayerFactory.getInstance()
+        			.getPlayer(properties.getPlayerType(i), hands[i]));
         }
         // Create teams and send players to them
         ArrayList<GoTTeam> teams = new ArrayList<>();
@@ -132,69 +107,30 @@ public class GameOfThrones extends CardGame {
         // End graphics
     }
 
-    private void pickACorrectSuit(int playerIndex, boolean isCharacter) {
-        Hand currentHand = hands[playerIndex];
-        List<Card> shortListCards = new ArrayList<>();
-        for (int i = 0; i < currentHand.getCardList().size(); i++) {
-            Card card = currentHand.getCardList().get(i);
-            Suit suit = (Suit) card.getSuit();
-            if (suit.isCharacter() == isCharacter) {
-                shortListCards.add(card);
-            }
-        }
-        if (shortListCards.isEmpty() || !isCharacter && GoTUtilities.getRandom().nextInt(3) == 0) {
-            selected = Optional.empty();
-        } else {
-            selected = Optional.of(shortListCards.get(GoTUtilities.getRandom().nextInt(shortListCards.size())));
-        }
-    }
-
-    private void waitForCorrectSuit(int playerIndex, boolean isCharacter) {
-        if (hands[playerIndex].isEmpty()) {
-            selected = Optional.empty();
-        } else {
-            selected = null;
-            hands[playerIndex].setTouchEnabled(true);
-            do {
-                if (selected == null) {
-                    delay(100);
-                    continue;
-                }
-                Suit suit = selected.isPresent() ? (Suit) selected.get().getSuit() : null;
-                if (isCharacter && suit != null && suit.isCharacter() ||         // If we want character, can't pass and suit must be right
-                        !isCharacter && (suit == null || !suit.isCharacter())) { // If we don't want character, can pass or suit must not be character
-                    // if (suit != null && suit.isCharacter() == isCharacter) {
-                    break;
-                } else {
-                    selected = null;
-                    hands[playerIndex].setTouchEnabled(true);
-                }
-                delay(100);
-            } while (true);
-        }
-    }
-    
-    private int getPlayerIndex(int index) {
-        return index % GoTData.nbPlayers;
-    }
-
     private void executeAPlay() {
         gotPiles.resetPile();
 
-        nextStartingPlayer = getPlayerIndex(nextStartingPlayer);
-        if (hands[nextStartingPlayer].getNumberOfCardsWithSuit(Suit.HEARTS) == 0)
-            nextStartingPlayer = getPlayerIndex(nextStartingPlayer + 1);
-        assert hands[nextStartingPlayer].getNumberOfCardsWithSuit(Suit.HEARTS) != 0 : " Starting player has no hearts.";
+        nextStartingPlayer = GoTUtilities.getPlayerIndex(nextStartingPlayer);
+        GoTPlayer player = this.players.get(nextStartingPlayer);
+        if (player.getHand().getNumberOfCardsWithSuit(Suit.HEARTS) == 0) {
+        	nextStartingPlayer = GoTUtilities.getPlayerIndex(nextStartingPlayer + 1);
+        	player = this.players.get(nextStartingPlayer);
+        }
+        assert player.getHand().getNumberOfCardsWithSuit(Suit.HEARTS) != 0 : " Starting player has no hearts.";
 
         // 1: play the first 2 hearts
         for (int i = 0; i < 2; i++) {
-            int playerIndex = getPlayerIndex(nextStartingPlayer + i);
+            int playerIndex = GoTUtilities.getPlayerIndex(nextStartingPlayer + i);
             setStatusText("Player " + playerIndex + " select a Heart card to play");
-            if (humanPlayers[playerIndex]) {
-                waitForCorrectSuit(playerIndex, true);
+            player = this.players.get(playerIndex);
+            if (GoTData.humanPlayers[playerIndex]) {
+                // waitForCorrectSuit(playerIndex, true);
+            	player.waitForCorrectSuit(true);
             } else {
-                pickACorrectSuit(playerIndex, true);
+                // pickACorrectSuit(playerIndex, true);
+            	player.pickACorrectSuit(true);
             }
+            Optional<Card> selected = player.getSelectedCard();
 
             int pileIndex = playerIndex % 2;
             assert selected.isPresent() : " Pass returned on selection of character.";
@@ -209,17 +145,20 @@ public class GameOfThrones extends CardGame {
         int nextPlayer = nextStartingPlayer + 2;
 
         while(remainingTurns > 0) {
-            nextPlayer = getPlayerIndex(nextPlayer);
+            nextPlayer = GoTUtilities.getPlayerIndex(nextPlayer);
             setStatusText("Player" + nextPlayer + " select a non-Heart card to play.");
-            if (humanPlayers[nextPlayer]) {
-                waitForCorrectSuit(nextPlayer, false);
+            // GoTPlayer player = this.players.get(nextPlayer);
+            player = this.players.get(nextPlayer);
+            if (GoTData.humanPlayers[nextPlayer]) {
+            	player.waitForCorrectSuit(false);
             } else {
-                pickACorrectSuit(nextPlayer, false);
+            	player.pickACorrectSuit(false);
             }
+            Optional<Card> selected = player.getSelectedCard();
 
             if (selected.isPresent()) {
                 setStatusText("Selected: " + GoTUtilities.canonical(selected.get()) + ". Player" + nextPlayer + " select a pile to play the card.");
-                if (humanPlayers[nextPlayer]) {
+                if (GoTData.humanPlayers[nextPlayer]) {
                     gotPiles.waitForPileSelection();
                 } else {
                     gotPiles.selectRandomPile();
@@ -311,30 +250,6 @@ public class GameOfThrones extends CardGame {
     }
 
     public static void main(String[] args) {
-        // System.out.println("Working Directory = " + System.getProperty("user.dir"));
-        // final Properties properties = new Properties();
-        // properties.setProperty("watchingTime", "5000");
-        /*
-        if (args == null || args.length == 0) {
-            //  properties = PropertiesLoader.loadPropertiesFile("cribbage.properties");
-        } else {
-            //  properties = PropertiesLoader.loadPropertiesFile(args[0]);
-        }
-
-        String seedProp = properties.getProperty("seed");  //Seed property
-        if (seedProp != null) { // Use property seed
-			  seed = Integer.parseInt(seedProp);
-        } else { // and no property
-			  seed = new Random().nextInt(); // so randomise
-        }
-        */
-    	// GoTPropertiesLoader properties = new GoTPropertiesLoader("properties/got.properties");
-        // int seed = properties.getSeed();
-        // System.out.println("Seed = " + seed);
-        // GoTUtilities.initializeRandom(seed);
-        // GoTData.watchingTime = ((Number)Integer.parseInt(properties.getProperty("watchingTime"))).intValue();
-        //GameOfThrones.random = new Random(seed);
-        
         new GameOfThrones(new GoTPropertiesLoader("properties/got.properties"));
     }
 

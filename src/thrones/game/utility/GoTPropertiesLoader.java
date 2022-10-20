@@ -27,6 +27,12 @@ public class GoTPropertiesLoader {
 		
 		GoTData.watchingTime = getWatchingTime();
 		GoTUtilities.initializeRandom(getSeed());
+		boolean[] humanPlayers = {getPlayerType(0) == GoTPlayerType.GOT_HUMAN,
+								  getPlayerType(1) == GoTPlayerType.GOT_HUMAN,
+								  getPlayerType(2) == GoTPlayerType.GOT_HUMAN,
+								  getPlayerType(3) == GoTPlayerType.GOT_HUMAN,
+								 };
+		GoTData.humanPlayers = humanPlayers;
 	}
 	
 	public String getProperty(String field) {
