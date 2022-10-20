@@ -21,6 +21,7 @@ public class GameOfThrones extends CardGame {
 	private GoTPropertiesLoader properties;
 	private GoTScore gotScore;
 	private GoTPiles gotPiles;
+	private GoTDisposePile disposePile;
     private int nextStartingPlayer = GoTUtilities.getRandom().nextInt(GoTData.nbPlayers);
     private ArrayList<GoTPlayer> players;
     
@@ -124,6 +125,7 @@ public class GameOfThrones extends CardGame {
             selected.get().setVerso(false);
             selected.get().transfer(gotPiles.getPile(pileIndex), true); // transfer to pile (includes graphic effect)
             gotPiles.updatePileRanks();
+            disposePile.addPlayed(selected.get());
         }
 
         // 2: play the remaining nbPlayers * nbRounds - 2
@@ -144,6 +146,7 @@ public class GameOfThrones extends CardGame {
                 selected.get().setVerso(false);
                 selected.get().transfer(gotPiles.getSelectedPile(), true); // transfer to pile (includes graphic effect)
                 gotPiles.updatePileRanks();
+                disposePile.addPlayed(selected.get());
             } else {
                 setStatusText("Pass.");
             }
@@ -216,6 +219,8 @@ public class GameOfThrones extends CardGame {
         
         this.gotScore = new GoTScore(this, gotPiles);
         gotScore.initScore();
+        
+        this.disposePile = new GoTDisposePile();
 
         setupGame();
         for (int i = 0; i < GoTData.nbPlays; i++) {

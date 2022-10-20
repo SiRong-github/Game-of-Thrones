@@ -12,8 +12,12 @@ public class GoTDisposePile extends GoTObservable{
 		this.pile.removeAll(false);
 	}
 	
-	public void dispose(Card card) {
+	public void addPlayed(Card card) {
 		pile.insert(card, false);
 		super.update();
+	}
+	
+	public Hand getPile() {
+		return pile;
 	}
 }
