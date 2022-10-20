@@ -9,6 +9,7 @@ import ch.aplu.jcardgame.CardAdapter;
 import ch.aplu.jcardgame.CardGame;
 import ch.aplu.jcardgame.Hand;
 import thrones.game.card.Suit;
+import thrones.game.utility.GoTPiles;
 import thrones.game.utility.GoTUtilities;
 
 public abstract class GoTPlayer {
@@ -31,7 +32,10 @@ public abstract class GoTPlayer {
         });
 	}
 	
-    public void pickACorrectSuit(boolean isCharacter) {
+	public abstract Optional<Card> getCorrectSuit(boolean isCharacter);
+	public abstract Hand selectPile(GoTPiles piles);
+	
+    protected Optional<Card> pickACorrectSuit(boolean isCharacter) {
         // Hand currentHand = hands[playerIndex];
         List<Card> shortListCards = new ArrayList<>();
         for (int i = 0; i < hand.getCardList().size(); i++) {
@@ -46,9 +50,10 @@ public abstract class GoTPlayer {
         } else {
             selected = Optional.of(shortListCards.get(GoTUtilities.getRandom().nextInt(shortListCards.size())));
         }
+        return selected;
     }
 
-    public void waitForCorrectSuit(boolean isCharacter) {
+    protected Optional<Card> waitForCorrectSuit(boolean isCharacter) {
         if (hand.isEmpty()) {
             selected = Optional.empty();
         } else {
@@ -71,7 +76,10 @@ public abstract class GoTPlayer {
                 CardGame.delay(100);
             } while (true);
         }
+        return selected;
     }
+    
+   
     
     public Optional<Card> getSelectedCard(){
     	return selected;

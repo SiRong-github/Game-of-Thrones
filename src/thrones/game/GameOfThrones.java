@@ -3,13 +3,8 @@ package thrones.game;
 // Oh_Heaven.java
 
 import ch.aplu.jcardgame.*;
-import ch.aplu.jgamegrid.*;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.io.FileReader;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import thrones.game.card.*;
 import thrones.game.player.GoTPlayer;
@@ -63,9 +58,6 @@ public class GameOfThrones extends CardGame {
         }
     }
 
-
-
-    
     private void setupGame() {
     	Hand[] hands = new Hand[GoTData.nbPlayers];
         hands = new Hand[GoTData.nbPlayers];
@@ -123,14 +115,8 @@ public class GameOfThrones extends CardGame {
             int playerIndex = GoTUtilities.getPlayerIndex(nextStartingPlayer + i);
             setStatusText("Player " + playerIndex + " select a Heart card to play");
             player = this.players.get(playerIndex);
-            if (GoTData.humanPlayers[playerIndex]) {
-                // waitForCorrectSuit(playerIndex, true);
-            	player.waitForCorrectSuit(true);
-            } else {
-                // pickACorrectSuit(playerIndex, true);
-            	player.pickACorrectSuit(true);
-            }
-            Optional<Card> selected = player.getSelectedCard();
+            Optional<Card> selected = player.getCorrectSuit(true);
+            // Optional<Card> selected = player.getSelectedCard();
 
             int pileIndex = playerIndex % 2;
             assert selected.isPresent() : " Pass returned on selection of character.";
@@ -149,20 +135,11 @@ public class GameOfThrones extends CardGame {
             setStatusText("Player" + nextPlayer + " select a non-Heart card to play.");
             // GoTPlayer player = this.players.get(nextPlayer);
             player = this.players.get(nextPlayer);
-            if (GoTData.humanPlayers[nextPlayer]) {
-            	player.waitForCorrectSuit(false);
-            } else {
-            	player.pickACorrectSuit(false);
-            }
-            Optional<Card> selected = player.getSelectedCard();
-
+            Optional<Card> selected = player.getCorrectSuit(false);
+            
             if (selected.isPresent()) {
                 setStatusText("Selected: " + GoTUtilities.canonical(selected.get()) + ". Player" + nextPlayer + " select a pile to play the card.");
-                if (GoTData.humanPlayers[nextPlayer]) {
-                    gotPiles.waitForPileSelection();
-                } else {
-                    gotPiles.selectRandomPile();
-                }
+                player.selectPile(gotPiles);
                 System.out.println("Player " + nextPlayer + " plays " + GoTUtilities.canonical(selected.get()) + " on pile " + gotPiles.getSelectedPileIndex());
                 selected.get().setVerso(false);
                 selected.get().transfer(gotPiles.getSelectedPile(), true); // transfer to pile (includes graphic effect)
