@@ -15,6 +15,7 @@ import thrones.game.card.*;
 import thrones.game.player.GoTPlayer;
 import thrones.game.player.GoTSimplePlayerFactory;
 import thrones.game.player.GoTTeam;
+import thrones.game.utility.GoTData;
 import thrones.game.utility.GoTPropertiesLoader;
 
 @SuppressWarnings("serial")
@@ -56,12 +57,14 @@ public class GameOfThrones extends CardGame {
 	
 	private GoTPropertiesLoader properties;
 	
-    /*
+    /* put this inside Rank enum
     Canonical String representations of Suit, Rank, Card, and Hand
     */
-    String canonical(Suit s) { return s.toString().substring(0, 1); }
+    // String canonical(Suit s) { return s.toString().substring(0, 1); }
 
+	/* put this inside Rank enum
     String canonical(Rank r) {
+    	
         switch (r) {
             case ACE: case KING: case QUEEN: case JACK: case TEN:
                 return r.toString().substring(0, 1);
@@ -69,12 +72,17 @@ public class GameOfThrones extends CardGame {
                 return String.valueOf(r.getRankValue());
         }
     }
-
-    String canonical(Card c) { return canonical((Rank) c.getRank()) + canonical((Suit) c.getSuit()); }
+	 */
+    
+    
+    String canonical(Card c) { 
+    	return Rank.canonical((Rank) c.getRank()) + Suit.canonical((Suit)c.getSuit()); 
+    }
 
     String canonical(Hand h) {
         return "[" + h.getCardList().stream().map(this::canonical).collect(Collectors.joining(",")) + "]";
     }
+    
     static public int seed;
     static Random random;
 
@@ -119,81 +127,27 @@ public class GameOfThrones extends CardGame {
         }
     }
 
-    private final String version = "1.0";
-    public final int nbPlayers = 4;
-    public final int nbStartCards = 9;
-	public final int nbPlays = 6;
-	public final int nbRounds = 3;
-    private final int handWidth = 400;
-    private final int pileWidth = 40;
-    private Deck deck = new Deck(Suit.values(), Rank.values(), "cover");
-    private final Location[] handLocations = {
-            new Location(350, 625),
-            new Location(75, 350),
-            new Location(350, 75),
-            new Location(625, 350)
-    };
 
-    private final Location[] scoreLocations = {
-            new Location(575, 675),
-            new Location(25, 575),
-            new Location(25, 25),
-            new Location(575, 125)
-    };
-    private final Location[] pileLocations = {
-            new Location(350, 280),
-            new Location(350, 430)
-    };
-    private final Location[] pileStatusLocations = {
-            new Location(250, 200),
-            new Location(250, 520)
-    };
+    private Deck deck = new Deck(Suit.values(), Rank.values(), "cover");
+
 
     private Actor[] pileTextActors = { null, null };
-    private Actor[] scoreActors = {null, null, null, null};
     private final int watchingTime = 5000;
     private Hand[] hands;
     private Hand[] piles;
     private final String[] playerTeams = { "[Players 0 & 2]", "[Players 1 & 3]"};
-    private int nextStartingPlayer = random.nextInt(nbPlayers);
+    private int nextStartingPlayer = random.nextInt(GoTData.nbPlayers);
 
-    private int[] scores = new int[nbPlayers];
 
-    Font bigFont = new Font("Arial", Font.BOLD, 36);
-    Font smallFont = new Font("Arial", Font.PLAIN, 10);
+
+    public Font bigFont = new Font("Arial", Font.BOLD, 36);
+    public Font smallFont = new Font("Arial", Font.PLAIN, 10);
 
     // boolean[] humanPlayers = { true, false, false, false};
     boolean[] humanPlayers = { false, false, false, false};
 
 
-    private void initScore() {
-        for (int i = 0; i < nbPlayers; i++) {
-             scores[i] = 0;
-            String text = "P" + i + "-0";
-            scoreActors[i] = new TextActor(text, Color.WHITE, bgColor, bigFont);
-            addActor(scoreActors[i], scoreLocations[i]);
-        }
 
-        String text = "Attack: 0 - Defence: 0";
-        for (int i = 0; i < pileTextActors.length; i++) {
-            pileTextActors[i] = new TextActor(text, Color.WHITE, bgColor, smallFont);
-            addActor(pileTextActors[i], pileStatusLocations[i]);
-        }
-    }
-
-    private void updateScore(int player) {
-        removeActor(scoreActors[player]);
-        String text = "P" + player + "-" + scores[player];
-        scoreActors[player] = new TextActor(text, Color.WHITE, bgColor, bigFont);
-        addActor(scoreActors[player], scoreLocations[player]);
-    }
-
-    private void updateScores() {
-        for (int i = 0; i < nbPlayers; i++) {
-            updateScore(i);
-        }
-        System.out.println(playerTeams[0] + " score = " + scores[0] + "; " + playerTeams[1] + " score = " + scores[1]);
-    }
 
     private Optional<Card> selected;
     private final int NON_SELECTION_VALUE = -1;
@@ -202,13 +156,13 @@ public class GameOfThrones extends CardGame {
     private final int ATTACK_RANK_INDEX = 0;
     private final int DEFENCE_RANK_INDEX = 1;
     private void setupGame() {
-        hands = new Hand[nbPlayers];
-        for (int i = 0; i < nbPlayers; i++) {
+        hands = new Hand[GoTData.nbPlayers];
+        for (int i = 0; i < GoTData.nbPlayers; i++) {
             hands[i] = new Hand(deck);
         }
-        dealingOut(hands, nbPlayers, nbStartCards);
+        dealingOut(hands, GoTData.nbPlayers, nbStartCards);
 
-        for (int i = 0; i < nbPlayers; i++) {
+        for (int i = 0; i < GoTData.nbPlayers; i++) {
             hands[i].sort(Hand.SortType.SUITPRIORITY, true);
             System.out.println("hands[" + i + "]: " + canonical(hands[i]));
         }
@@ -229,7 +183,7 @@ public class GameOfThrones extends CardGame {
         
         // Create player and give them hand of cards
         ArrayList<GoTPlayer> players = new ArrayList<>();
-        for (int i = 0; i < nbPlayers; i++) {
+        for (int i = 0; i < GoTData.nbPlayers; i++) {
         	players.add(GoTSimplePlayerFactory.getInstance().getPlayer(properties.getPlayerType(i)));
         }
         // Create teams and send players to them
@@ -237,16 +191,16 @@ public class GameOfThrones extends CardGame {
         teams.add(new GoTTeam());
         teams.add(new GoTTeam());
         int currentTeam = 0;
-        for (int i = 0; i < nbPlayers; i++) {
-        	currentTeam = nbPlayers%teams.size();
+        for (int i = 0; i < GoTData.nbPlayers; i++) {
+        	currentTeam = GoTData.nbPlayers%teams.size();
         	teams.get(currentTeam).addPlayer(players.get(i));
         }
         // Create round manager and send teams to it
         
         // graphics
-        RowLayout[] layouts = new RowLayout[nbPlayers];
-        for (int i = 0; i < nbPlayers; i++) {
-            layouts[i] = new RowLayout(handLocations[i], handWidth);
+        RowLayout[] layouts = new RowLayout[GoTData.nbPlayers];
+        for (int i = 0; i < GoTData.nbPlayers; i++) {
+            layouts[i] = new RowLayout(GoTData.handLocations[i], GoTData.handWidth);
             layouts[i].setRotationAngle(90 * i);
             hands[i].setView(this, layouts[i]);
             hands[i].draw();
@@ -263,7 +217,7 @@ public class GameOfThrones extends CardGame {
         piles = new Hand[2];
         for (int i = 0; i < 2; i++) {
             piles[i] = new Hand(deck);
-            piles[i].setView(this, new RowLayout(pileLocations[i], 8 * pileWidth));
+            piles[i].setView(this, new RowLayout(GoTData.pileLocations[i], 8 * GoTData.pileWidth));
             piles[i].draw();
             final Hand currentPile = piles[i];
             final int pileIndex = i;
@@ -348,7 +302,7 @@ public class GameOfThrones extends CardGame {
         removeActor(currentPile);
         String text = playerTeams[pileIndex] + " Attack: " + attackRank + " - Defence: " + defenceRank;
         pileTextActors[pileIndex] = new TextActor(text, Color.WHITE, bgColor, smallFont);
-        addActor(pileTextActors[pileIndex], pileStatusLocations[pileIndex]);
+        addActor(pileTextActors[pileIndex], GoTData.pileStatusLocations[pileIndex]);
     }
 
     private void updatePileRanks() {
@@ -359,7 +313,7 @@ public class GameOfThrones extends CardGame {
     }
 
     private int getPlayerIndex(int index) {
-        return index % nbPlayers;
+        return index % GoTData.nbPlayers;
     }
 
     private void executeAPlay() {
@@ -389,7 +343,7 @@ public class GameOfThrones extends CardGame {
         }
 
         // 2: play the remaining nbPlayers * nbRounds - 2
-        int remainingTurns = nbPlayers * nbRounds - 2;
+        int remainingTurns = GoTData.nbPlayers * GoTData.nbRounds - 2;
         int nextPlayer = nextStartingPlayer + 2;
 
         while(remainingTurns > 0) {
@@ -467,7 +421,7 @@ public class GameOfThrones extends CardGame {
         
         this.properties = properties;
 
-        setTitle("Game of Thrones (V" + version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
+        setTitle("Game of Thrones (V" + GoTData.version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
         setStatusText("Initializing...");
         initScore();
 

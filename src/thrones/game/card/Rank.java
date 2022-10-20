@@ -11,4 +11,13 @@ public enum Rank {
     public int getRankValue() {
         return rankValue;
     }
+    
+    public static String canonical(Rank r) {
+    	switch (r) {
+        case ACE: case KING: case QUEEN: case JACK: case TEN:
+            return r.toString().substring(0, 1);
+        default:
+            return String.valueOf(r.getRankValue());
+    	}
+    }
 }
