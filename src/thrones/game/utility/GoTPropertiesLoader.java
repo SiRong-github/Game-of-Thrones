@@ -63,8 +63,8 @@ public class GoTPropertiesLoader {
 		properties.setProperty("seed", "30006");
 		properties.setProperty("watchingTime", "5000");
 		properties.setProperty("players.0", "smart");
-		properties.setProperty("player.1", "smart");
-		properties.setProperty("player.2", "simple");
-		properties.setProperty("player.3", "simple");
+		properties.setProperty("players.1", "smart");
+		properties.setProperty("players.2", "simple");
+		properties.setProperty("players.3", "simple");
 	}
 }

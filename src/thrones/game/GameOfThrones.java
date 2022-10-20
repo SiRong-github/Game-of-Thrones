@@ -24,7 +24,7 @@ public class GameOfThrones extends CardGame {
 	private GoTDisposePile disposePile;
     private int nextStartingPlayer = GoTUtilities.getRandom().nextInt(GoTData.nbPlayers);
     private ArrayList<GoTPlayer> players;
-    
+
     private void dealingOut(Hand[] hands, int nbPlayers, int nbCardsPerPlayer) {
         Hand pack = GoTData.deck.toHand(false);
         assert pack.getNumberOfCards() == 52 : " Starting pack is not 52 cards.";
