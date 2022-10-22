@@ -24,7 +24,6 @@ public class GameOfThrones extends CardGame {
 	private GoTScore gotScore;
 	private GoTPiles gotPiles;
 	private GoTDisposePile disposePile;
-    private int nextStartingPlayer = GoTUtilities.getRandom().nextInt(GoTData.nbPlayers);
     private ArrayList<GoTPlayer> players;
 
     private void dealingOut(Hand[] hands, int nbPlayers, int nbCardsPerPlayer) {
@@ -119,8 +118,6 @@ public class GameOfThrones extends CardGame {
         setStatusText("Initializing...");
         
         setupGame();
-        
-        GoTData.watchingTime = 0;
         
         GoTPlayMgr gotPlayMgr = new GoTPlayMgr(this, gotPiles, disposePile, players, gotScore);
         while (!gotPlayMgr.isGameEnd()) {
