@@ -47,6 +47,7 @@ public class GoTScore {
             updateScore(i);
         }
         System.out.println(GoTData.playerTeams[0] + " score = " + scores[0] + "; " + GoTData.playerTeams[1] + " score = " + scores[1]);
+        got.refresh();
     }
     
     public void showGameResult() {
@@ -60,6 +61,7 @@ public class GoTScore {
         }
         System.out.println("Result: " + text);
         got.setStatusText(text);
+        got.refresh();
     }
     
     public void addScore(int playerIndex, int score) {

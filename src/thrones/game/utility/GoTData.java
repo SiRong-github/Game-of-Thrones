@@ -8,6 +8,10 @@ import thrones.game.card.Rank;
 import thrones.game.card.Suit;
 
 public class GoTData {
+	public static final int windowWidth = 700;
+	public static final int windowHeight = 700;
+	public static final int statusHeight = 30;
+	
     public static final String version = "1.0";
     public static final int nbPlayers = 4;
     public static final int nbStartCards = 9;
