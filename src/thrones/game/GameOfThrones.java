@@ -25,6 +25,7 @@ public class GameOfThrones extends CardGame {
 	private GoTPiles gotPiles;
 	private GoTDisposePile disposePile;
     private ArrayList<GoTPlayer> players;
+    private GoTPlayMgr gotPlayMgr;
 
     private void dealingOut(Hand[] hands, int nbPlayers, int nbCardsPerPlayer) {
         Hand pack = GoTData.deck.toHand(false);
@@ -60,12 +61,7 @@ public class GameOfThrones extends CardGame {
         }
     }
 
-    private void setupGame() {
-        this.gotPiles = new GoTPiles(this);
-        this.gotScore = new GoTScore(this, gotPiles);
-        gotScore.initScore();
-        this.disposePile = new GoTDisposePile();
-        
+    private void setupGame() {        
     	Hand[] hands = new Hand[GoTData.nbPlayers];
         hands = new Hand[GoTData.nbPlayers];
         for (int i = 0; i < GoTData.nbPlayers; i++) {
@@ -104,6 +100,12 @@ public class GameOfThrones extends CardGame {
             hands[i].draw();
         }
         // End graphics
+        
+        this.gotPiles = new GoTPiles(this);
+        this.gotScore = new GoTScore(this, gotPiles);
+        gotScore.initScore();
+        this.disposePile = new GoTDisposePile();
+        gotPlayMgr = new GoTPlayMgr(this, gotPiles, disposePile, players, gotScore);
     }
 
 
@@ -119,7 +121,6 @@ public class GameOfThrones extends CardGame {
         
         setupGame();
         
-        GoTPlayMgr gotPlayMgr = new GoTPlayMgr(this, gotPiles, disposePile, players, gotScore);
         while (!gotPlayMgr.isGameEnd()) {
         	gotPlayMgr.nextPlay();
         }
