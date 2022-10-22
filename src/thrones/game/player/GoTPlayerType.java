@@ -17,6 +17,6 @@ public enum GoTPlayerType {
 		} else if(type.equals("smart")) {
 			return GOT_SMART;
 		}
-		return GOT_RANDOM;
+		return GOT_SIMPLE;
 	}
 }

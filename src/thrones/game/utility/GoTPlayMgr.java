@@ -64,6 +64,7 @@ public class GoTPlayMgr {
 
             gotPiles.updatePileRanks();
             disposePile.addPlayed(selected.get());
+
         }
 
         // 2: play the remaining nbPlayers * nbRounds - 2
@@ -73,23 +74,26 @@ public class GoTPlayMgr {
         while(remainingTurns > 0) {
             nextPlayer = GoTUtilities.getPlayerIndex(nextPlayer);
             got.setStatusText("Player" + nextPlayer + " select a non-Heart card to play.");
-            // GoTPlayer player = this.players.get(nextPlayer);
             player = this.players.get(nextPlayer);
-            Optional<Card> selected = player.getCorrectSuit(false);
+            GoTCardPilePair cardPile = player.getCorrectCardPile(got, gotPiles, nextPlayer);
+            Optional<Card> selected = cardPile.getCard();
             
             if (selected.isPresent()) {
                 got.setStatusText("Selected: " + GoTUtilities.canonical(selected.get()) + ". Player" + nextPlayer + " select a pile to play the card.");
-                player.selectPile(gotPiles);
-                System.out.println("Player " + nextPlayer + " plays " + GoTUtilities.canonical(selected.get()) + " on pile " + gotPiles.getSelectedPileIndex());
+                int pileIndex = cardPile.getPileIndex();
+
+                //we might have to get rid of this
+                System.out.println("Player " + nextPlayer + " plays " + GoTUtilities.canonical(selected.get()) + " on pile " + pileIndex);
+
                 selected.get().setVerso(false);
                 selected.get().transfer(gotPiles.getSelectedPile(), true); // transfer to pile (includes graphic effect)
 
-                int pileIndex = gotPiles.getSelectedPileIndex();
                 gotPiles.decorateCharacter(pileIndex, selected.get());
 
                 gotPiles.updatePileRanks();
                 disposePile.addPlayed(selected.get());
             } else {
+                System.out.println("Player " + nextPlayer + " Pass");
                 got.setStatusText("Pass.");
             }
             nextPlayer++;

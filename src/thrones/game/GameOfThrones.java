@@ -11,12 +11,7 @@ import thrones.game.card.*;
 import thrones.game.player.GoTPlayer;
 import thrones.game.player.GoTSimplePlayerFactory;
 import thrones.game.player.GoTTeam;
-import thrones.game.utility.GoTData;
-import thrones.game.utility.GoTPiles;
-import thrones.game.utility.GoTPlayMgr;
-import thrones.game.utility.GoTPropertiesLoader;
-import thrones.game.utility.GoTScore;
-import thrones.game.utility.GoTUtilities;
+import thrones.game.utility.*;
 
 @SuppressWarnings("serial")
 public class GameOfThrones extends CardGame {
@@ -36,6 +31,7 @@ public class GameOfThrones extends CardGame {
             card.removeFromHand(false);
         }
         assert pack.getNumberOfCards() == 48 : " Pack without aces is not 48 cards.";
+
         // Give each player 3 heart cards
         for (int i = 0; i < nbPlayers; i++) {
             for (int j = 0; j < 3; j++) {
