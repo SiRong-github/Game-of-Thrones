@@ -23,6 +23,7 @@ public class GoTData {
     public static final int UNDEFINED_INDEX = -1;
     public static final int ATTACK_RANK_INDEX = 0;
     public static final int DEFENCE_RANK_INDEX = 1;
+    public static final int NUM_TEAMS = 2;
     
     public static Font bigFont = new Font("Arial", Font.BOLD, 36);
     public static Font smallFont = new Font("Arial", Font.PLAIN, 10);

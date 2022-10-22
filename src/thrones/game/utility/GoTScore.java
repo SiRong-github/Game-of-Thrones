@@ -6,6 +6,7 @@ import ch.aplu.jgamegrid.Actor;
 import ch.aplu.jgamegrid.Location;
 import ch.aplu.jgamegrid.TextActor;
 import thrones.game.GameOfThrones;
+import thrones.game.card.GoTCharacter;
 
 public class GoTScore {
 	

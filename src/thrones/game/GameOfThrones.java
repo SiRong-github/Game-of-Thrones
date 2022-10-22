@@ -6,6 +6,7 @@ import ch.aplu.jcardgame.*;
 
 import java.util.*;
 
+import org.w3c.dom.CharacterData;
 import thrones.game.card.*;
 import thrones.game.player.GoTPlayer;
 import thrones.game.player.GoTSimplePlayerFactory;
@@ -124,6 +125,9 @@ public class GameOfThrones extends CardGame {
             System.out.println("Player " + playerIndex + " plays " + GoTUtilities.canonical(selected.get()) + " on pile " + pileIndex);
             selected.get().setVerso(false);
             selected.get().transfer(gotPiles.getPile(pileIndex), true); // transfer to pile (includes graphic effect)
+
+            gotPiles.decorateCharacter(pileIndex, selected.get());
+
             gotPiles.updatePileRanks();
             disposePile.addPlayed(selected.get());
         }
@@ -145,6 +149,10 @@ public class GameOfThrones extends CardGame {
                 System.out.println("Player " + nextPlayer + " plays " + GoTUtilities.canonical(selected.get()) + " on pile " + gotPiles.getSelectedPileIndex());
                 selected.get().setVerso(false);
                 selected.get().transfer(gotPiles.getSelectedPile(), true); // transfer to pile (includes graphic effect)
+
+                int pileIndex = gotPiles.getSelectedPileIndex();
+                gotPiles.decorateCharacter(pileIndex, selected.get());
+
                 gotPiles.updatePileRanks();
                 disposePile.addPlayed(selected.get());
             } else {
@@ -216,10 +224,10 @@ public class GameOfThrones extends CardGame {
         setStatusText("Initializing...");
         
         this.gotPiles = new GoTPiles(this);
-        
+
         this.gotScore = new GoTScore(this, gotPiles);
         gotScore.initScore();
-        
+
         this.disposePile = new GoTDisposePile();
 
         setupGame();

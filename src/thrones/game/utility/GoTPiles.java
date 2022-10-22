@@ -9,7 +9,9 @@ import ch.aplu.jcardgame.Hand;
 import ch.aplu.jcardgame.RowLayout;
 import ch.aplu.jgamegrid.Actor;
 import ch.aplu.jgamegrid.TextActor;
+import thrones.game.CharacterFactory;
 import thrones.game.GameOfThrones;
+import thrones.game.card.GoTCharacter;
 import thrones.game.card.Rank;
 
 public class GoTPiles {
@@ -18,11 +20,15 @@ public class GoTPiles {
     private Actor[] pileTextActors = { null, null };
     
     private Hand[] piles;
-    
+
     private GameOfThrones got;
+
+    private GoTCharacter[] correspondingCharacters;
+    private CharacterFactory characterFactory;
     
     public GoTPiles(GameOfThrones got) {
     	this.got = got;
+        this.characterFactory = CharacterFactory.getCharacterFactory();
     }
     
     public void waitForPileSelection() {
@@ -40,8 +46,14 @@ public class GoTPiles {
 
     public int[] calculatePileRanks(int pileIndex) {
         Hand currentPile = piles[pileIndex];
-        int i = currentPile.isEmpty() ? 0 : ((Rank) currentPile.get(0).getRank()).getRankValue();
-        return new int[] { i, i };
+        /*int i = currentPile.isEmpty() ? 0 : ((Rank) currentPile.get(0).getRank()).getRankValue();
+        return new int[] { i, i };*/
+        if (currentPile.isEmpty()) {
+            return new int[] {0, 0};
+        }
+        else {
+            return correspondingCharacters[pileIndex].computeAttackAndDefend();
+        }
     }
 
     public void updatePileRankState(int pileIndex, int attackRank, int defenceRank) {
@@ -65,8 +77,9 @@ public class GoTPiles {
                 pile.removeAll(true);
             }
         }
-        piles = new Hand[2];
-        for (int i = 0; i < 2; i++) {
+        piles = new Hand[GoTData.NUM_TEAMS];
+        correspondingCharacters = new GoTCharacter[GoTData.NUM_TEAMS];
+        for (int i = 0; i < GoTData.NUM_TEAMS; i++) {
             piles[i] = new Hand(GoTData.deck);
             piles[i].setView(got, new RowLayout(GoTData.pileLocations[i], 8 * GoTData.pileWidth));
             piles[i].draw();
@@ -81,6 +94,14 @@ public class GoTPiles {
         }
 
         updatePileRanks();
+    }
+
+    public void decorateCharacter(int pileIndex, Card card) {
+        correspondingCharacters[pileIndex] = characterFactory.decorateCharacter(correspondingCharacters[pileIndex], card);
+    }
+
+    public void getInitialPileCard(int pileIndex) {
+        correspondingCharacters[pileIndex].computeBaseCharacterRank();
     }
     
     public void selectRandomPile() {
