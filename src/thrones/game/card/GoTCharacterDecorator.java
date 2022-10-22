@@ -17,6 +17,6 @@ public abstract class GoTCharacterDecorator extends GoTCharacter{
 
 	@Override
 	public int computeBaseCharacterRank() {
-		return ((Rank) decoratee.getCard().getRank()).getRankValue();
+		return decoratee.computeBaseCharacterRank();
 	}
 }

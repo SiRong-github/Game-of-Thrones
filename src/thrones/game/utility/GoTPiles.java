@@ -100,8 +100,8 @@ public class GoTPiles {
         correspondingCharacters[pileIndex] = characterFactory.decorateCharacter(correspondingCharacters[pileIndex], card);
     }
 
-    public void getInitialPileCard(int pileIndex) {
-        correspondingCharacters[pileIndex].computeBaseCharacterRank();
+    public int getInitialPileCard(int pileIndex) {
+        return correspondingCharacters[pileIndex].computeBaseCharacterRank();
     }
     
     public void selectRandomPile() {

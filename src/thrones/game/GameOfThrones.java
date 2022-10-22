@@ -172,36 +172,46 @@ public class GameOfThrones extends CardGame {
         System.out.println("piles[0] is " + "Attack: " + pile0Ranks[GoTData.ATTACK_RANK_INDEX] + " - Defence: " + pile0Ranks[GoTData.DEFENCE_RANK_INDEX]);
         System.out.println("piles[1]: " + GoTUtilities.canonical(gotPiles.getPile(1)));
         System.out.println("piles[1] is " + "Attack: " + pile1Ranks[GoTData.ATTACK_RANK_INDEX] + " - Defence: " + pile1Ranks[GoTData.DEFENCE_RANK_INDEX]);
-        Rank pile0CharacterRank = (Rank) gotPiles.getPile(0).getCardList().get(0).getRank();
-        Rank pile1CharacterRank = (Rank) gotPiles.getPile(1).getCardList().get(0).getRank();
+        // Rank pile0CharacterRank = (Rank) gotPiles.getPile(0).getCardList().get(0).getRank();
+        // Rank pile1CharacterRank = (Rank) gotPiles.getPile(1).getCardList().get(0).getRank();
+        int pile0CharacterRank = gotPiles.getInitialPileCard(0);
+        int pile1CharacterRank = gotPiles.getInitialPileCard(1);
         String character0Result;
         String character1Result;
 
         if (pile0Ranks[GoTData.ATTACK_RANK_INDEX] > pile1Ranks[GoTData.DEFENCE_RANK_INDEX]) {
 //            scores[0] += pile1CharacterRank.getRankValue();
 //            scores[2] += pile1CharacterRank.getRankValue();
-            gotScore.addScore(0, pile1CharacterRank.getRankValue());
-            gotScore.addScore(2, pile1CharacterRank.getRankValue());
+            // gotScore.addScore(0, pile1CharacterRank.getRankValue());
+            // gotScore.addScore(2, pile1CharacterRank.getRankValue());
+            gotScore.addScore(0, pile1CharacterRank);
+            gotScore.addScore(2, pile1CharacterRank);
             character0Result = "Character 0 attack on character 1 succeeded.";
         } else {
 //            scores[1] += pile1CharacterRank.getRankValue();
 //            scores[3] += pile1CharacterRank.getRankValue();
-            gotScore.addScore(1, pile1CharacterRank.getRankValue());
-            gotScore.addScore(3, pile1CharacterRank.getRankValue());
+            // gotScore.addScore(1, pile1CharacterRank.getRankValue());
+            // gotScore.addScore(3, pile1CharacterRank.getRankValue());
+            gotScore.addScore(1, pile1CharacterRank);
+            gotScore.addScore(3, pile1CharacterRank);
             character0Result = "Character 0 attack on character 1 failed.";
         }
 
         if (pile1Ranks[GoTData.ATTACK_RANK_INDEX] > pile0Ranks[GoTData.DEFENCE_RANK_INDEX]) {
 //            scores[1] += pile0CharacterRank.getRankValue();
 //            scores[3] += pile0CharacterRank.getRankValue();
-            gotScore.addScore(1, pile0CharacterRank.getRankValue());
-            gotScore.addScore(3, pile0CharacterRank.getRankValue());
+            // gotScore.addScore(1, pile0CharacterRank.getRankValue());
+            // gotScore.addScore(3, pile0CharacterRank.getRankValue());
+            gotScore.addScore(1, pile0CharacterRank);
+            gotScore.addScore(3, pile0CharacterRank);
             character1Result = "Character 1 attack on character 0 succeeded.";
         } else {
 //            scores[0] += pile0CharacterRank.getRankValue();
 //            scores[2] += pile0CharacterRank.getRankValue();
-            gotScore.addScore(0, pile0CharacterRank.getRankValue());
-            gotScore.addScore(2, pile0CharacterRank.getRankValue());
+            // gotScore.addScore(0, pile0CharacterRank.getRankValue());
+            // gotScore.addScore(2, pile0CharacterRank.getRankValue());
+            gotScore.addScore(0, pile0CharacterRank);
+            gotScore.addScore(2, pile0CharacterRank);
             character1Result = "Character 1 attack character 0 failed.";
         }
         gotScore.updateScores();
