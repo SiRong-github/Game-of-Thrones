@@ -1,5 +1,3 @@
-//Shanaia
-
 package thrones.game.player;
 
 import java.util.List;

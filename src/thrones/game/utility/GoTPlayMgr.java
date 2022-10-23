@@ -1,3 +1,4 @@
+//Xiaojiang
 package thrones.game.utility;
 
 import java.util.ArrayList;
@@ -82,7 +83,6 @@ public class GoTPlayMgr {
                 got.setStatusText("Selected: " + GoTUtilities.canonical(selected.get()) + ". Player" + nextPlayer + " select a pile to play the card.");
                 int pileIndex = cardPile.getPileIndex();
 
-                //we might have to get rid of this
                 System.out.println("Player " + nextPlayer + " plays " + GoTUtilities.canonical(selected.get()) + " on pile " + pileIndex);
 
                 selected.get().setVerso(false);
