@@ -1,7 +1,6 @@
-package thrones.game;
+package thrones.game.card;
 
 import ch.aplu.jcardgame.Card;
-import thrones.game.card.*;
 
 public class CharacterFactory {
     private static CharacterFactory factory = null;

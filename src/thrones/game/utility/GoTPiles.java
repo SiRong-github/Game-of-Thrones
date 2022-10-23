@@ -9,8 +9,8 @@ import ch.aplu.jcardgame.Hand;
 import ch.aplu.jcardgame.RowLayout;
 import ch.aplu.jgamegrid.Actor;
 import ch.aplu.jgamegrid.TextActor;
-import thrones.game.CharacterFactory;
 import thrones.game.GameOfThrones;
+import thrones.game.card.CharacterFactory;
 import thrones.game.card.GoTCharacter;
 import thrones.game.card.Rank;
 
