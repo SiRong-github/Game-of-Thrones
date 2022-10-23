@@ -4,13 +4,14 @@ import ch.aplu.jcardgame.Hand;
 import thrones.game.card.GoTDisposePile;
 import thrones.game.utility.GoTScore;
 
-public class GoTSimplePlayerFactory {
-	private static GoTSimplePlayerFactory _instance = new GoTSimplePlayerFactory();
-	private GoTSimplePlayerFactory() {
+public class GoTPlayerFactory {
+	private static GoTPlayerFactory _instance = new GoTPlayerFactory();
+
+	private GoTPlayerFactory() {
 		
 	}
 	
-	public static GoTSimplePlayerFactory getInstance() {
+	public static GoTPlayerFactory getInstance() {
 		return _instance;
 	}
 	

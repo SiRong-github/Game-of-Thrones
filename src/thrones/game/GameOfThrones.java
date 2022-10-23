@@ -9,8 +9,8 @@ import java.util.*;
 import org.w3c.dom.CharacterData;
 import thrones.game.card.*;
 import thrones.game.player.GoTPlayer;
+import thrones.game.player.GoTPlayerFactory;
 import thrones.game.player.GoTPlayerType;
-import thrones.game.player.GoTSimplePlayerFactory;
 import thrones.game.player.GoTTeam;
 import thrones.game.utility.*;
 
@@ -78,7 +78,7 @@ public class GameOfThrones extends CardGame {
         // Create player and give them hand of cards
         this.players = new ArrayList<>();
         for (int i = 0; i < GoTData.nbPlayers; i++) {
-        	players.add(GoTSimplePlayerFactory.getInstance()
+        	players.add(GoTPlayerFactory.getInstance()
         			.getPlayer(properties.getPlayerType(i), hands[i], gotScore, disposePile, i%2));
             if (properties.getPlayerType(i) == GoTPlayerType.GOT_SMART) {
                 disposePile.addObserver((GoTObserver) players.get(i));
