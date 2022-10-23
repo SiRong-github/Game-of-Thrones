@@ -15,10 +15,6 @@ import thrones.game.utility.*;
 @SuppressWarnings("serial")
 public class GameOfThrones extends CardGame {
 	private GoTPropertiesLoader properties;
-	private GoTScore gotScore;
-	private GoTPiles gotPiles;
-	private GoTDisposePile disposePile;
-    private ArrayList<GoTPlayer> players;
     private GoTPlayMgr gotPlayMgr;
 
     private void dealingOut(Hand[] hands, int nbPlayers, int nbCardsPerPlayer) {
@@ -56,12 +52,17 @@ public class GameOfThrones extends CardGame {
         }
     }
 
-    private void setupGame() {        
+    private void setupGame() {
+    	GoTScore gotScore;
+    	GoTPiles gotPiles;
+    	GoTDisposePile disposePile;
+        ArrayList<GoTPlayer> players;
+       
     	Hand[] hands = new Hand[GoTData.nbPlayers];
-        this.gotPiles = new GoTPiles(this);
-        this.gotScore = new GoTScore(this, gotPiles);
+        gotPiles = new GoTPiles(this);
+        gotScore = new GoTScore(this, gotPiles);
         gotScore.initScore();
-        this.disposePile = new GoTDisposePile();
+        disposePile = new GoTDisposePile();
         hands = new Hand[GoTData.nbPlayers];
         for (int i = 0; i < GoTData.nbPlayers; i++) {
             hands[i] = new Hand(GoTData.deck);
@@ -74,7 +75,7 @@ public class GameOfThrones extends CardGame {
         }
         
         // Create player and give them hand of cards
-        this.players = new ArrayList<>();
+        players = new ArrayList<>();
         for (int i = 0; i < GoTData.nbPlayers; i++) {
         	players.add(GoTPlayerFactory.getInstance()
         			.getPlayer(properties.getPlayerType(i), hands[i], gotScore, disposePile, i%2));
