@@ -1,3 +1,5 @@
+//Shanaia
+
 package thrones.game.player;
 
 import java.util.ArrayList;
@@ -50,7 +52,6 @@ public abstract class GoTPlayer {
                     continue;
                 }
                 Suit suit = selected.isPresent() ? (Suit) selected.get().getSuit() : null;
-
                 if (isCharacter && suit != null && suit.isCharacter() ||         // If we want character, can't pass and suit must be right
                         !isCharacter && (suit == null || !suit.isCharacter())) { // If we don't want character, can pass or suit must not be character
                     break;
@@ -88,7 +89,8 @@ public abstract class GoTPlayer {
         selected = getCorrectSuit(false, turn);
         System.out.println("selected " + selected);
         if (selected.isPresent()) {
-            got.setStatusText("Selected: " + GoTUtilities.canonical(selected.get()) + ". Player" + player + " select a pile to play the card.");
+            got.setStatusText("Selected: " + GoTUtilities.canonical(selected.get()) + ". Player" +
+                    player + " select a pile to play the card.");
             selectPile(gotPiles);
             Suit suit = (Suit) selected.get().getSuit();
             Suit prev = (Suit) gotPiles.getSelectedPile().getLast().getSuit();
@@ -113,7 +115,8 @@ public abstract class GoTPlayer {
         do {
             selected = getCorrectSuit(false, 3);
             if (selected.isPresent()) {
-                got.setStatusText("Selected: " + GoTUtilities.canonical(selected.get()) + ". Player" + player + " select a pile to play the card.");
+                got.setStatusText("Selected: " + GoTUtilities.canonical(selected.get()) + ". Player" +
+                        player + " select a pile to play the card.");
                 selectPile(gotPiles);
                 Suit suit = (Suit) selected.get().getSuit();
                 Suit prev = (Suit) gotPiles.getSelectedPile().getLast().getSuit();

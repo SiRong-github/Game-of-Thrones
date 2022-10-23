@@ -1,6 +1,7 @@
+//Shanaia
+
 package thrones.game.player;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,10 +9,8 @@ import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.CardAdapter;
 import ch.aplu.jcardgame.Hand;
 import thrones.game.GameOfThrones;
-import thrones.game.card.Suit;
 import thrones.game.utility.GoTCardPilePair;
 import thrones.game.utility.GoTPiles;
-import thrones.game.utility.GoTUtilities;
 
 public class GoTHumanPlayer extends GoTPlayer {
 

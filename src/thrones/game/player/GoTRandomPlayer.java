@@ -1,3 +1,5 @@
+//Shanaia
+
 package thrones.game.player;
 
 import java.util.List;
@@ -27,15 +29,6 @@ public class GoTRandomPlayer extends GoTPlayer {
 		return piles.getSelectedPile();
 	}
 
-	// Override
-	public GoTCardPilePair getCorrectCardPile(GameOfThrones got, GoTPiles gotPiles, int turn){
-		return super.playCorrectCardPile(got, gotPiles, turn);
-	}
-
-	public GoTCardPilePair strategy(GoTCardPilePair cardPile){
-		return cardPile;
-	}
-
 	protected Optional<Card> aiSuit(List<Card> shortListCards, boolean isCharacter, int turn){
 		if (shortListCards.isEmpty() || !isCharacter && GoTUtilities.getRandom().nextInt(3) == 0) {
 			selected = Optional.empty();
@@ -43,6 +36,15 @@ public class GoTRandomPlayer extends GoTPlayer {
 			selected = Optional.of(shortListCards.get(GoTUtilities.getRandom().nextInt(shortListCards.size())));
 		}
 		return selected;
+	}
+
+	// Override
+	public GoTCardPilePair getCorrectCardPile(GameOfThrones got, GoTPiles gotPiles, int turn){
+		return super.playCorrectCardPile(got, gotPiles, turn);
+	}
+
+	public GoTCardPilePair strategy(GoTCardPilePair cardPile){
+		return cardPile;
 	}
 
 }

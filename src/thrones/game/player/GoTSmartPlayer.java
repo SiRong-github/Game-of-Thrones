@@ -1,9 +1,10 @@
+//Shanaia
+
 package thrones.game.player;
 
 import java.util.*;
 
 import ch.aplu.jcardgame.Card;
-import ch.aplu.jcardgame.Deck;
 import ch.aplu.jcardgame.Hand;
 import thrones.game.GameOfThrones;
 import thrones.game.card.*;
@@ -25,11 +26,6 @@ public class GoTSmartPlayer extends GoTPlayer implements GoTObserver {
 		super(hand, team);
 		scores.addObserver((GoTObserver) this);
 		disposePile.addObserver((GoTObserver) this);
-	}
-
-	public List<Rank> getRanks() {
-		List<Rank> unknowns = Arrays.stream(Rank.values()).toList();
-		return unknowns;
 	}
 
 	public Optional<Card> getCorrectSuit(boolean isCharacter, int turn) {
@@ -72,6 +68,11 @@ public class GoTSmartPlayer extends GoTPlayer implements GoTObserver {
 		return cardPile;
 	}
 
+	public List<Rank> getRanks() {
+		List<Rank> unknowns = Arrays.stream(Rank.values()).toList();
+		return unknowns;
+	}
+
 	protected Optional<Card> aiSuit(List<Card> shortListCards, boolean isCharacter, int turn) {
 		int own = player % 2;
 		int other = (player + 1) % 2;
@@ -102,6 +103,7 @@ public class GoTSmartPlayer extends GoTPlayer implements GoTObserver {
 						}
 					}
 				}
+
 				selected = Optional.of(shortListCards.get(0));
 			}
 		} else {
