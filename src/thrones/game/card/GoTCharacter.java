@@ -1,3 +1,4 @@
+//Pratika
 package thrones.game.card;
 
 import ch.aplu.jcardgame.Card;
