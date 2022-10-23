@@ -51,7 +51,7 @@ public class GoTPlayMgr {
             int playerIndex = GoTUtilities.getPlayerIndex(nextStartingPlayer + i);
             got.setStatusText("Player " + playerIndex + " select a Heart card to play");
             player = this.players.get(playerIndex);
-            Optional<Card> selected = player.getCorrectSuit(true);
+            Optional<Card> selected = player.getCorrectSuit(true, 3);
             // Optional<Card> selected = player.getSelectedCard();
 
             int pileIndex = playerIndex % 2;
@@ -75,7 +75,7 @@ public class GoTPlayMgr {
             nextPlayer = GoTUtilities.getPlayerIndex(nextPlayer);
             got.setStatusText("Player" + nextPlayer + " select a non-Heart card to play.");
             player = this.players.get(nextPlayer);
-            GoTCardPilePair cardPile = player.getCorrectCardPile(got, gotPiles, nextPlayer);
+            GoTCardPilePair cardPile = player.getCorrectCardPile(got, gotPiles, remainingTurns);
             Optional<Card> selected = cardPile.getCard();
             
             if (selected.isPresent()) {

@@ -9,6 +9,7 @@ import java.util.*;
 import org.w3c.dom.CharacterData;
 import thrones.game.card.*;
 import thrones.game.player.GoTPlayer;
+import thrones.game.player.GoTPlayerType;
 import thrones.game.player.GoTSimplePlayerFactory;
 import thrones.game.player.GoTTeam;
 import thrones.game.utility.*;
@@ -59,6 +60,10 @@ public class GameOfThrones extends CardGame {
 
     private void setupGame() {        
     	Hand[] hands = new Hand[GoTData.nbPlayers];
+        this.gotPiles = new GoTPiles(this);
+        this.gotScore = new GoTScore(this, gotPiles);
+        gotScore.initScore();
+        this.disposePile = new GoTDisposePile();
         hands = new Hand[GoTData.nbPlayers];
         for (int i = 0; i < GoTData.nbPlayers; i++) {
             hands[i] = new Hand(GoTData.deck);
@@ -74,7 +79,11 @@ public class GameOfThrones extends CardGame {
         this.players = new ArrayList<>();
         for (int i = 0; i < GoTData.nbPlayers; i++) {
         	players.add(GoTSimplePlayerFactory.getInstance()
-        			.getPlayer(properties.getPlayerType(i), hands[i]));
+        			.getPlayer(properties.getPlayerType(i), hands[i], gotScore, disposePile, i%2));
+            if (properties.getPlayerType(i) == GoTPlayerType.GOT_SMART) {
+                disposePile.addObserver((GoTObserver) players.get(i));
+            }
+            System.out.println(properties.getPlayerType(i));
         }
         // Create teams and send players to them
         ArrayList<GoTTeam> teams = new ArrayList<>();
@@ -96,15 +105,8 @@ public class GameOfThrones extends CardGame {
             hands[i].draw();
         }
         // End graphics
-        
-        this.gotPiles = new GoTPiles(this);
-        this.gotScore = new GoTScore(this, gotPiles);
-        gotScore.initScore();
-        this.disposePile = new GoTDisposePile();
         gotPlayMgr = new GoTPlayMgr(this, gotPiles, disposePile, players, gotScore);
     }
-
-
 
     public GameOfThrones(GoTPropertiesLoader properties) {
     	// super(prop.getWidth(), prop.getHeight(), prop.getStatusHeight());

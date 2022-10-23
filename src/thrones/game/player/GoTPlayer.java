@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import ch.aplu.jcardgame.Card;
-import ch.aplu.jcardgame.CardAdapter;
 import ch.aplu.jcardgame.CardGame;
 import ch.aplu.jcardgame.Hand;
 import thrones.game.BrokeRuleException;
@@ -17,33 +16,26 @@ import thrones.game.utility.GoTUtilities;
 
 public abstract class GoTPlayer {
 	protected Hand hand;
+    protected int player;
 	protected Optional<Card> selected;
 	
-	public GoTPlayer(Hand hand) {
+	public GoTPlayer(Hand hand, int player) {
 		this.hand = hand;
+        this.player = player;
 	}
-	
-	public abstract Optional<Card> getCorrectSuit(boolean isCharacter);
 
-	public abstract Hand selectPile(GoTPiles piles);
+    public abstract Hand selectPile(GoTPiles piles);
+    public abstract Optional<Card> getCorrectSuit(boolean isCharacter, int turn);
+    protected abstract Optional<Card> aiSuit(List<Card> shortListCards, boolean isCharacter, int turn);
+    public abstract GoTCardPilePair getCorrectCardPile(GameOfThrones got, GoTPiles gotPiles, int turn);
+    public abstract GoTCardPilePair strategy(GoTCardPilePair cardPile);
 
-    public abstract GoTCardPilePair getCorrectCardPile(GameOfThrones got, GoTPiles gotPiles, int player);
+    public Optional<Card> getSelectedCard(){
+        return selected;
+    }
 
-    protected abstract Optional<Card> aiSuit(List<Card> shortListCards, boolean isCharacter);
-
-    public abstract GoTCardPilePair strategy(GoTCardPilePair cardPile, int playerNum);
-	
-    protected Optional<Card> pickACorrectSuit(boolean isCharacter) {
-        // Hand currentHand = hands[playerIndex];
-        List<Card> shortListCards = new ArrayList<>();
-        for (int i = 0; i < hand.getCardList().size(); i++) {
-            Card card = hand.getCardList().get(i);
-            Suit suit = (Suit) card.getSuit();
-            if (suit.isCharacter() == isCharacter) {
-                shortListCards.add(card);
-            }
-        }
-        return aiSuit(shortListCards, isCharacter);
+    public Hand getHand() {
+        return this.hand;
     }
 
     protected Optional<Card> waitForCorrectSuit(boolean isCharacter) {
@@ -77,10 +69,23 @@ public abstract class GoTPlayer {
         return selected;
     }
 
-    public GoTCardPilePair playCorrectCardPile(GameOfThrones got, GoTPiles gotPiles, int player) {
+    protected Optional<Card> pickACorrectSuit(boolean isCharacter, int turn) {
+        // Hand currentHand = hands[playerIndex];
+        List<Card> shortListCards = new ArrayList<>();
+        for (int i = 0; i < hand.getCardList().size(); i++) {
+            Card card = hand.getCardList().get(i);
+            Suit suit = (Suit) card.getSuit();
+            if (suit.isCharacter() == isCharacter) {
+                shortListCards.add(card);
+            }
+        }
+        return aiSuit(shortListCards, isCharacter, turn);
+    }
+
+    public GoTCardPilePair playCorrectCardPile(GameOfThrones got, GoTPiles gotPiles, int turn) {
         Optional<Card> selected;
         GoTCardPilePair cardPile;
-        selected = getCorrectSuit(false);
+        selected = getCorrectSuit(false, turn);
         System.out.println("selected " + selected);
         if (selected.isPresent()) {
             got.setStatusText("Selected: " + GoTUtilities.canonical(selected.get()) + ". Player" + player + " select a pile to play the card.");
@@ -93,7 +98,7 @@ public abstract class GoTPlayer {
                 cardPile = new GoTCardPilePair(Optional.empty(), 0);
             } else {
                 cardPile = new GoTCardPilePair(selected, gotPiles.getSelectedPileIndex());
-                cardPile = strategy(cardPile, player);
+                cardPile = strategy(cardPile);
             }
         } else {
             cardPile = new GoTCardPilePair(Optional.empty(), 0);
@@ -102,12 +107,11 @@ public abstract class GoTPlayer {
         return cardPile;
     }
 
-
-    public GoTCardPilePair waitForCorrectCardPile(GameOfThrones got, GoTPiles gotPiles, int player) {
+    public GoTCardPilePair waitForCorrectCardPile(GameOfThrones got, GoTPiles gotPiles) {
         Optional<Card> selected;
         GoTCardPilePair cardPile;
         do {
-            selected = getCorrectSuit(false);
+            selected = getCorrectSuit(false, 3);
             if (selected.isPresent()) {
                 got.setStatusText("Selected: " + GoTUtilities.canonical(selected.get()) + ". Player" + player + " select a pile to play the card.");
                 selectPile(gotPiles);
@@ -127,14 +131,6 @@ public abstract class GoTPlayer {
             got.setStatusText("Player" + player + " select a non-Heart card to play.");
         } while (true);
         return cardPile;
-    }
-
-    public Optional<Card> getSelectedCard(){
-    	return selected;
-    }
-    
-    public Hand getHand() {
-    	return this.hand;
     }
 
     protected static void heartRule(boolean isCharacter, Suit suit) throws BrokeRuleException {

@@ -1,5 +1,6 @@
 package thrones.game.player;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,8 +15,8 @@ import thrones.game.utility.GoTUtilities;
 
 public class GoTHumanPlayer extends GoTPlayer {
 
-	public GoTHumanPlayer(Hand hand) {
-		super(hand);
+	public GoTHumanPlayer(Hand hand, int player) {
+		super(hand, player);
 		// TODO Auto-generated constructor stub
 
 		// Set up listener
@@ -32,7 +33,7 @@ public class GoTHumanPlayer extends GoTPlayer {
 	}
 	
 	// Override
-	public Optional<Card> getCorrectSuit(boolean isCharacter) {
+	public Optional<Card> getCorrectSuit(boolean isCharacter, int turn) {
 		return super.waitForCorrectSuit(isCharacter);
 	}
 	
@@ -43,16 +44,20 @@ public class GoTHumanPlayer extends GoTPlayer {
 	}
 
 	// Override
-	public GoTCardPilePair getCorrectCardPile(GameOfThrones got, GoTPiles gotPiles, int nextPlayer){
-		return super.waitForCorrectCardPile(got, gotPiles, nextPlayer);
+	public GoTCardPilePair getCorrectCardPile(GameOfThrones got, GoTPiles gotPiles, int turn){
+		return super.waitForCorrectCardPile(got, gotPiles);
 	}
 
 	// Override
-	public GoTCardPilePair strategy(GoTCardPilePair cardPile, int playerNum){
+	public GoTCardPilePair strategy(GoTCardPilePair cardPile){
 		return cardPile;
 	}
 
-	protected Optional<Card> aiSuit(List<Card> shortListCards, boolean isCharacter) {
+	protected Optional<Card> pickACorrectSuit(boolean isCharacter, int turn) {
+		return Optional.empty();
+	}
+
+	protected Optional<Card> aiSuit(List<Card> shortListCards, boolean isCharacter, int turn){
 		return Optional.empty();
 	}
 

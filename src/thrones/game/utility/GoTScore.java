@@ -8,22 +8,22 @@ import ch.aplu.jgamegrid.TextActor;
 import thrones.game.GameOfThrones;
 import thrones.game.card.GoTCharacter;
 
-public class GoTScore {
-	
+public class GoTScore extends GoTObservable {
+
     private Actor[] scoreActors = {null, null, null, null};
     private int[] scores = new int[GoTData.nbPlayers];
 
     private GameOfThrones got;
     private GoTPiles gotPiles;
-    
+
     public GoTScore(GameOfThrones got, GoTPiles gotPiles) {
-    	this.gotPiles = gotPiles;
-    	this.got = got;
+        this.gotPiles = gotPiles;
+        this.got = got;
     }
 
     public void initScore() {
         for (int i = 0; i < GoTData.nbPlayers; i++) {
-             scores[i] = 0;
+            scores[i] = 0;
             String text = "P" + i + "-0";
             scoreActors[i] = new TextActor(text, Color.WHITE, got.bgColor, GoTData.bigFont);
             got.addActor(scoreActors[i], GoTData.scoreLocations[i]);
@@ -47,11 +47,12 @@ public class GoTScore {
             updateScore(i);
         }
         System.out.println(GoTData.playerTeams[0] + " score = " + scores[0] + "; " + GoTData.playerTeams[1] + " score = " + scores[1]);
+        update();
         got.refresh();
     }
-    
+
     public void showGameResult() {
-    	String text;
+        String text;
         if (scores[0] > scores[1]) {
             text = "Players 0 and 2 won.";
         } else if (scores[0] == scores[1]) {
@@ -63,10 +64,14 @@ public class GoTScore {
         got.setStatusText(text);
         got.refresh();
     }
-    
+
     public void addScore(int playerIndex, int score) {
-    	if (playerIndex >= 0 && playerIndex < scores.length) {
-    		scores[playerIndex] += score;
-    	}
+        if (playerIndex >= 0 && playerIndex < scores.length) {
+            scores[playerIndex] += score;
+        }
+    }
+
+    public int[] getScore() {
+        return scores;
     }
 }
