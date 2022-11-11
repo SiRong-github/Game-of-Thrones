@@ -53,8 +53,8 @@ public class GoTPropertiesLoader {
 	 * @return player type, default random player
 	 */
 	public GoTPlayerType getPlayerType(int index) {
-		if (index >= 0 && index <= 4){
-			return GoTPlayerType.toType("player."+index);
+		if (index >= 0 && index < 4){
+			return GoTPlayerType.toType("players."+index);
 		}
 		return GoTPlayerType.GOT_RANDOM;
 	}
