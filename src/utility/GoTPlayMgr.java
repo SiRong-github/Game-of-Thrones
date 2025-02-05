@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.CardGame;
-import card.GoTDisposePile;
 import card.Suit;
 import ch.aplu.jcardgame.Hand;
 import player.GoTPlayer;
@@ -62,6 +61,7 @@ public class GoTPlayMgr {
      */
     private void displayCard(Card card, Hand targetHand) {
         card.setVerso(false); // displays card face (front) instead of card cover
+        System.out.println("target hand " + targetHand);
         card.transfer(targetHand, true); // transfer to pile (includes graphic effect)
     }
 
@@ -72,6 +72,7 @@ public class GoTPlayMgr {
     private void updatePiles(Card card) {
         gotPiles.updatePileRanks();
         disposePile.addPlayed(card);
+        //TODO: add players.update()
     }
 
     /**
@@ -105,7 +106,7 @@ public class GoTPlayMgr {
             player = this.players.get(playerIndex);
 
             //Let player play heart card
-            Optional<Card> selected = player.getCorrectSuit(true, 3);
+            Optional<Card> selected = player.getCorrectSuit(true, GoTData.nbRounds);
             assert selected.isPresent() : " Pass returned on selection of character.";
 
             //Play card on pile
@@ -118,10 +119,11 @@ public class GoTPlayMgr {
      * Play effect cards
      */
     private void playEffects() {
-        int remainingTurns = GoTData.nbPlayers * GoTData.nbRounds - 2;
+        int remainingTurns = GoTData.maxTurns;
         int nextPlayer = nextStartingPlayer + 2;
 
         while(remainingTurns > 0) {
+            System.out.println("remaining turns " + remainingTurns);
 
             //Curr player
             nextPlayer = GoTUtilities.getPlayerIndex(nextPlayer);

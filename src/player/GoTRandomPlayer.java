@@ -5,10 +5,7 @@ import java.util.Optional;
 
 import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Hand;
-import utility.GameOfThrones;
-import utility.GoTCardPilePair;
-import utility.GoTPiles;
-import utility.GoTUtilities;
+import utility.*;
 
 public class GoTRandomPlayer extends GoTPlayer {
 
@@ -21,27 +18,18 @@ public class GoTRandomPlayer extends GoTPlayer {
 	}
 
 	@Override
-	public Hand selectPile(GoTPiles piles) {
-		piles.selectRandomPile();
-		return piles.getSelectedPile();
-	}
-
-	protected Optional<Card> aiSuit(List<Card> shortListCards, boolean isCharacter, int turn){
-		if (shortListCards.isEmpty() || (!isCharacter && GoTUtilities.getRandom().nextInt(3) == 0)) {
-			selected = Optional.empty();
+	protected Optional<Card> aiSuit(List<Card> shortListCards, boolean isCharacter){
+		if (shortListCards.isEmpty() || (!isCharacter && GoTUtilities.getRandom().nextInt(GoTData.nbRounds) == 0)) {
+			card = Optional.empty();
 		} else {
-			selected = Optional.of(shortListCards.get(GoTUtilities.getRandom().nextInt(shortListCards.size())));
+			card = getRandomCard(shortListCards);
 		}
-		return selected;
+		return card;
 	}
 
-	// Override
+	@Override
 	public GoTCardPilePair getCorrectCardPile(GameOfThrones got, GoTPiles gotPiles, int turn){
 		return super.playCorrectCardPile(got, gotPiles, turn);
-	}
-
-	public GoTCardPilePair strategy(GoTCardPilePair cardPile){
-		return cardPile;
 	}
 
 }

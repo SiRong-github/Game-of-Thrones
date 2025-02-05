@@ -44,7 +44,7 @@ public class GoTScore extends GoTObservable {
             updateScore(i);
         }
         System.out.println(GoTData.playerTeams[0] + " score = " + scores[0] + "; " + GoTData.playerTeams[1] + " score = " + scores[1]);
-        update();
+        super.update();
         got.refresh();
     }
 

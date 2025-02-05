@@ -11,19 +11,19 @@ import card.*;
 
 public class GoTSmartPlayer extends GoTPlayer implements GoTObserver {
 	private GameOfThrones got;
-	private GoTPiles gotPiles;
-	private GoTScore scores = new GoTScore(got, gotPiles);
+	private GoTPiles gotPiles = new GoTPiles(got);
+
 	private GoTDisposePile played = new GoTDisposePile();
-	private List<Rank> unknowns = Arrays.stream(Rank.values()).toList();
+	private ArrayList<Rank> unknowns = new ArrayList<>(Arrays.stream(Rank.values()).toList());
 
 	public GoTSmartPlayer(Hand hand, int team) {
 		super(hand, team);
 	}
 
-	public GoTSmartPlayer(Hand hand, GoTScore scores, GoTDisposePile disposePile, int team) {
+	public GoTSmartPlayer(Hand hand, GoTPiles gotPiles, GoTDisposePile disposePile, int team) {
 		super(hand, team);
-		scores.addObserver((GoTObserver) this);
-		disposePile.addObserver((GoTObserver) this);
+		gotPiles.addObserver(this);
+		disposePile.addObserver(this);
 	}
 
 	public Optional<Card> getCorrectSuit(boolean isCharacter, int turn) {
@@ -32,80 +32,38 @@ public class GoTSmartPlayer extends GoTPlayer implements GoTObserver {
 
 	@Override
 	public Hand selectPile(GoTPiles piles) {
-		piles.selectRandomPile();
+		piles.selectPile(pile);
 		return piles.getSelectedPile();
+	}
+
+	private void updateUnknowns() {
+		Card c = played.getPile().getLast();
+		if (c != null && ((Suit) c.getSuit()).isMagic()) {
+			unknowns.remove(c.getRank());
+		}
 	}
 
 	@Override
 	public void update(Object o) {
 		if (o.getClass().getName().equals(GoTDisposePile.class.getName())) {
 			played = (GoTDisposePile) o;
+			updateUnknowns();
 		}
 
-		if (o.getClass().getName().equals(GoTScore.class.getName())) {
-			scores = (GoTScore) o;
+		if (o.getClass().getName().equals(GoTPiles.class.getName())) {
+			gotPiles = (GoTPiles) o;
 		}
 	}
 
-	// Override
-	public GoTCardPilePair getCorrectCardPile(GameOfThrones got, GoTPiles gotPiles, int turn) {
-		return super.playCorrectCardPile(got, gotPiles, turn);
-	}
-
-	// Override
-	public GoTCardPilePair strategy(GoTCardPilePair cardPile) {
-		Optional<Card> card = cardPile.getCard();
-		int pileIndex = cardPile.getPileIndex();
-		int ownPile = player % 2;
-		int otherPile = (player + 1) % 2;
-		Suit suit = (Suit) card.get().getSuit();
-		if ((suit.isMagic() && pileIndex == ownPile) || (!suit.isMagic() && pileIndex == otherPile)) {
-			cardPile = new GoTCardPilePair(Optional.empty(), 0);
-		}
-		return cardPile;
-	}
-
-//	protected void sortCards(List<Card> cards) {
-//		List<Card> sorted = new ArrayList<>();
-//		HashMap<Character, Character> map = new HashMap<>();
-//		for (Card c : cards) {
-//			map.put(c.getRank(), c.getSuit());
-//		}
-//
-//
-//	}
-
-	protected Optional<Card> aiSuit(List<Card> shortListCards, boolean isCharacter, int turn) {
-		int own = player % 2;
-		int other = (player + 1) % 2;
-
-		for (Card c : shortListCards) {
-			System.out.println("c " + c + " rank " + c.getRank() + " suit " + c.getSuit());
-		}
-
-		Collections.sort(shortListCards);
-
-		if (!shortListCards.isEmpty() && scores.getScore()[own] < scores.getScore()[other] && turn != 1) {
-			ArrayList<Card> knowns = played.getPile().getCardsWithSuit(GoTSuit.MAGIC);
-			Collections.reverse(knowns);
-
-			System.out.println("Unknowns: " + unknowns);
-			for (Rank unknown : unknowns) {
-				System.out.println(unknown);
-			}
-
-			for (Card known : knowns) {
-				Rank knownRank = (Rank) known.getRank();
-				unknowns.remove(knownRank);
-			}
-
-			Iterator itr = shortListCards.listIterator();
-			while (itr.hasNext() && !unknowns.isEmpty()) {
-				Card c = (Card) itr.next();
-				for (Rank unknown : unknowns) {
-					if (c.getRank().equals(unknown)) {
-						itr.remove();
-					}
+	@Override
+	protected Optional<Card> aiSuit(List<Card> shortListCards, boolean isCharacter) {
+		setUnknowns(); //remove unknown diamonds in hand
+		if (!isCharacter) {
+			Iterator<Card> itr = shortListCards.listIterator();
+			while (itr.hasNext()) {
+				Card c = itr.next();
+				if (unknowns.contains((Rank) c.getRank())) {
+					itr.remove();
 				}
 			}
 		}
@@ -113,9 +71,52 @@ public class GoTSmartPlayer extends GoTPlayer implements GoTObserver {
 		if (shortListCards.isEmpty()) {
 			return Optional.empty();
 		} else {
-			return Optional.of(shortListCards.get(0));
+			return getRandomCard(shortListCards);
+		}
+	}
+
+
+	@Override
+	public Optional<Card> strategy() {
+
+		int ownPile = player % 2;
+		int otherPile = (player + 1) % 2;
+
+		if (card.isPresent()) {
+			int[] ownRanks = gotPiles.getPileRanks()[ownPile];
+			int[] otherRanks = gotPiles.getPileRanks()[otherPile];
+
+			if (!((Suit) card.get().getSuit()).isMagic()) {
+				if (((Suit) card.get().getSuit()).isAttack() &&
+						ownRanks[GoTData.ATTACK_RANK_INDEX] > otherRanks[GoTData.DEFENCE_RANK_INDEX]) {
+					card = Optional.empty();
+				} else {
+					pile = ownPile;
+				}
+			} else {
+				if (otherRanks[GoTData.ATTACK_RANK_INDEX] != 0 &&
+						ownRanks[GoTData.DEFENCE_RANK_INDEX] <= otherRanks[GoTData.ATTACK_RANK_INDEX]) {
+					pile = otherPile;
+				} else {
+					card = Optional.empty();
+				}
+			}
+		} else {
+			card = Optional.empty();
 		}
 
+		return card;
+	}
+
+	@Override
+	public GoTCardPilePair getCorrectCardPile(GameOfThrones got, GoTPiles gotPiles, int turn){
+		return super.playCorrectCardPile(got, gotPiles, turn);
+	}
+
+	private void setUnknowns() {
+		for (Card c : hand.getCardsWithSuit(Suit.DIAMONDS)) {
+			unknowns.remove(c.getRank());
+		}
 	}
 
 }

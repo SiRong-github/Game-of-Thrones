@@ -9,49 +9,54 @@ import java.util.Optional;
 import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.CardGame;
 import ch.aplu.jcardgame.Hand;
-import utility.BrokeRuleException;
-import utility.GameOfThrones;
+import utility.*;
 import card.Suit;
-import utility.GoTCardPilePair;
-import utility.GoTPiles;
-import utility.GoTUtilities;
 
 public abstract class GoTPlayer {
 	protected Hand hand;
     protected int player;
-	protected Optional<Card> selected;
+	protected Optional<Card> card;
+    protected int pile;
 	
 	public GoTPlayer(Hand hand, int player) {
 		this.hand = hand;
         this.player = player;
 	}
 
-    public abstract Hand selectPile(GoTPiles piles);
     public abstract Optional<Card> getCorrectSuit(boolean isCharacter, int turn);
-    protected abstract Optional<Card> aiSuit(List<Card> shortListCards, boolean isCharacter, int turn);
+    protected abstract Optional<Card> aiSuit(List<Card> shortListCards, boolean isCharacter);
     public abstract GoTCardPilePair getCorrectCardPile(GameOfThrones got, GoTPiles gotPiles, int turn);
-    public abstract GoTCardPilePair strategy(GoTCardPilePair cardPile);
 
     public Optional<Card> getSelectedCard(){
-        return selected;
+        return card;
     }
 
     public Hand getHand() {
         return this.hand;
     }
 
+    protected Optional<Card> getRandomCard(List<Card> shortListCards) {
+        return Optional.of(shortListCards.get(GoTUtilities.getRandom().nextInt(shortListCards.size())));
+    }
+
+    public Hand selectPile(GoTPiles piles) {
+        piles.selectRandomPile();
+        pile = piles.getSelectedPileIndex();
+        return piles.getSelectedPile();
+    }
+
     protected Optional<Card> waitForCorrectSuit(boolean isCharacter) {
         if (hand.isEmpty()) {
-            selected = Optional.empty();
+            card = Optional.empty();
         } else {
-            selected = null;
+            card = null;
             hand.setTouchEnabled(true);
             do {
-                if (selected == null) {
+                if (card == null) {
                     CardGame.delay(100);
                     continue;
                 }
-                Suit suit = selected.isPresent() ? (Suit) selected.get().getSuit() : null;
+                Suit suit = card.isPresent() ? (Suit) card.get().getSuit() : null;
                 if (isCharacter && suit != null && suit.isCharacter() ||         // If we want character, can't pass and suit must be right
                         !isCharacter && (suit == null || !suit.isCharacter())) { // If we don't want character, can pass or suit must not be character
                     break;
@@ -61,52 +66,95 @@ public abstract class GoTPlayer {
                     } catch (BrokeRuleException bre){
                         System.out.println(bre.getMessage());
                     }
-                    selected = null;
+                    card = null;
                     hand.setTouchEnabled(true);
                 }
                 CardGame.delay(100);
             } while (true);
         }
-        return selected;
+        return card;
     }
 
+    /***
+     * Determines if the player can't play magic
+     * @param turn
+     * @return true if can play a non magic card (1st effect card)
+     */
+    protected boolean canPlayMagic(int turn) {
+        return turn < GoTData.maxTurns - GoTData.pileSize;
+    }
+
+
     protected Optional<Card> pickACorrectSuit(boolean isCharacter, int turn) {
-        // Hand currentHand = hands[playerIndex];
         List<Card> shortListCards = new ArrayList<>();
-        for (int i = 0; i < hand.getCardList().size(); i++) {
-            Card card = hand.getCardList().get(i);
-            Suit suit = (Suit) card.getSuit();
-            if (suit.isCharacter() == isCharacter) {
-                shortListCards.add(card);
+        for (Card c: hand.getCardList()) {
+            if (isCharacter) { //only heart cards
+                if (((Suit) c.getSuit()).isCharacter()) {
+                    shortListCards.add(c);
+                }
+            } else {
+                if (((Suit) c.getSuit()).isCharacter() || //only effect cards
+                        ((Suit) c.getSuit()).isMagic() && !canPlayMagic(turn)) { //exclude magic cards if first effect
+                    continue;
+                }
+                shortListCards.add(c);
             }
         }
-        return aiSuit(shortListCards, isCharacter, turn);
+
+        System.out.println("isCharacter "+ isCharacter);
+        System.out.println("can't play magic "+ !canPlayMagic(turn));
+        System.out.println("shortlist "+ shortListCards);
+
+        if (shortListCards.isEmpty()) {
+            card = Optional.empty();
+        } else {
+            card = aiSuit(shortListCards, isCharacter);
+        }
+
+        System.out.println("card "+ card);
+
+        return card;
     }
 
     public GoTCardPilePair playCorrectCardPile(GameOfThrones got, GoTPiles gotPiles, int turn) {
-        Optional<Card> selected;
-        GoTCardPilePair cardPile;
-        selected = getCorrectSuit(false, turn);
-        System.out.println("selected " + selected);
-        if (selected.isPresent()) {
-            got.setStatusText("Selected: " + GoTUtilities.canonical(selected.get()) + ". Player" +
+        card = getCorrectSuit(false, turn);
+        System.out.println("card "+ card);
+        System.out.println("pile 0 " + gotPiles.getPile(0).getCardList());
+        System.out.println("pile 1 " + gotPiles.getPile(1).getCardList());
+        if (card.isPresent()) {
+            got.setStatusText("Selected: " + GoTUtilities.canonical(card.get()) + ". Player" +
                     player + " select a pile to play the card.");
-            selectPile(gotPiles);
-            Suit suit = (Suit) selected.get().getSuit();
-            Suit prev = (Suit) gotPiles.getSelectedPile().getLast().getSuit();
-            System.out.println("Pile: " + gotPiles.getSelectedPile());
-            System.out.println("Prev: " + prev);
-            if (prev.isCharacter() && suit.isMagic()) {
-                cardPile = new GoTCardPilePair(Optional.empty(), 0);
-            } else {
-                cardPile = new GoTCardPilePair(selected, gotPiles.getSelectedPileIndex());
-                cardPile = strategy(cardPile);
+            strategy();
+            System.out.println("card "+ card);
+
+            if (card.isPresent()) {
+                selectPile(gotPiles);
+                System.out.println("pile "+ pile);
+                Suit suit = (Suit) card.get().getSuit();
+                Suit prev = (Suit) gotPiles.getSelectedPile().getLast().getSuit();
+                System.out.println("card " + card);
+                System.out.println("suit " + suit);
+                System.out.println("prev " + prev);
+
+                if (prev.isCharacter() && suit.isMagic()) {
+                    card = Optional.empty();
+                }
+
+                if (card.isEmpty()) {
+                    suit = null;
+                }
+
+                try {
+                    diamondRule(suit, prev);
+                } catch (BrokeRuleException bre) {
+                    System.out.println(bre.getMessage());
+                }
             }
+
         } else {
-            cardPile = new GoTCardPilePair(Optional.empty(), 0);
+            card = Optional.empty();
         }
-        System.out.println("card " + cardPile.getCard() + " index " + cardPile.getPileIndex());
-        return cardPile;
+        return new GoTCardPilePair(card, pile);
     }
 
     public GoTCardPilePair waitForCorrectCardPile(GameOfThrones got, GoTPiles gotPiles) {
@@ -136,15 +184,20 @@ public abstract class GoTPlayer {
         return cardPile;
     }
 
+    public Optional<Card> strategy(){
+        return card;
+    }
+
+    //TODO: Fix throw, ensure that the program stops
     protected static void heartRule(boolean isCharacter, Suit suit) throws BrokeRuleException {
-        if (!isCharacter && suit.isCharacter()) {
+        if (suit != null && !isCharacter && suit.isCharacter()) {
             throw new BrokeRuleException("Heart (character) can only be played if you take one of the first 2 moves. " +
                     "Please try again.");
         }
     }
 
     public static void diamondRule(Suit suit, Suit prev) throws BrokeRuleException {
-        if (prev.isCharacter() && suit.isMagic()) {
+        if (prev != null && suit != null && prev.isCharacter() && suit.isMagic()) {
             throw new BrokeRuleException("Diamond can't be played directly on heart. Please try again.");
         }
     }

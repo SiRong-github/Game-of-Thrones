@@ -15,6 +15,7 @@ public class GoTData {
     public static final String version = "1.0";
     public static final int nbPlayers = 4;
     public static final int nbStartCards = 9;
+    public static final int maxTurns = GoTData.nbPlayers * GoTData.nbRounds - 2;
 	public static final int nbPlays = 6;
 	public static final int nbRounds = 3;
     public static final int handWidth = 400;

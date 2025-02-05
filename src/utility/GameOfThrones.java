@@ -133,7 +133,7 @@ public class GameOfThrones extends CardGame {
     private void addPlayers() {
         for (int i = 0; i < GoTData.nbPlayers; i++) {
             players.add(GoTPlayerFactory.getInstance()
-                    .getPlayer(properties.getPlayerType(i), hands[i], gotScore, disposePile, i % 2));
+                    .getPlayer(properties.getPlayerType(i), hands[i], gotPiles, disposePile, i % 2));
             if (properties.getPlayerType(i) == GoTPlayerType.GOT_SMART) {
                 disposePile.addObserver((GoTObserver) players.get(i));
             }

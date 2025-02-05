@@ -1,4 +1,4 @@
-package card;
+package utility;
 
 import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Hand;
@@ -21,4 +21,6 @@ public class GoTDisposePile extends GoTObservable{
 	public Hand getPile() {
 		return pile;
 	}
+
+
 }

@@ -19,17 +19,17 @@ public class GoTHumanPlayer extends GoTPlayer {
 		// Set up listener
 		hand.addCardListener(new CardAdapter() {
 			public void leftDoubleClicked(Card card) {
-				selected = Optional.of(card);
+				GoTHumanPlayer.this.card = Optional.of(card);
 				hand.setTouchEnabled(false);
 			}
 			public void rightClicked(Card card) {
-				selected = Optional.empty(); // Don't care which card we right-clicked for player to pass
+				GoTHumanPlayer.this.card = Optional.empty(); // Don't care which card we right-clicked for player to pass
 				hand.setTouchEnabled(false);
 			}
 		});
 	}
 	
-	// Override
+	@Override
 	public Optional<Card> getCorrectSuit(boolean isCharacter, int turn) {
 		return super.waitForCorrectSuit(isCharacter);
 	}
@@ -40,21 +40,23 @@ public class GoTHumanPlayer extends GoTPlayer {
 		return piles.getSelectedPile();
 	}
 
-	// Override
+	@Override
 	public GoTCardPilePair getCorrectCardPile(GameOfThrones got, GoTPiles gotPiles, int turn){
 		return super.waitForCorrectCardPile(got, gotPiles);
 	}
 
-	// Override
-	public GoTCardPilePair strategy(GoTCardPilePair cardPile){
-		return cardPile;
+	@Override
+	public Optional<Card> strategy() {
+		return this.card;
 	}
 
+	@Override
 	protected Optional<Card> pickACorrectSuit(boolean isCharacter, int turn) {
 		return Optional.empty();
 	}
 
-	protected Optional<Card> aiSuit(List<Card> shortListCards, boolean isCharacter, int turn){
+	@Override
+	protected Optional<Card> aiSuit(List<Card> shortListCards, boolean isCharacter){
 		return Optional.empty();
 	}
 

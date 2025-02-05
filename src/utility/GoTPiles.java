@@ -1,6 +1,7 @@
 package utility;
 
 import java.awt.Color;
+import java.util.Arrays;
 
 import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.CardAdapter;
@@ -12,7 +13,7 @@ import ch.aplu.jgamegrid.TextActor;
 import card.CharacterFactory;
 import card.GoTCharacter;
 
-public class GoTPiles {
+public class GoTPiles extends GoTObservable {
 
     private int selectedPileIndex = GoTData.NON_SELECTION_VALUE;
     private Actor[] pileTextActors = { null, null };
@@ -20,6 +21,7 @@ public class GoTPiles {
     private Hand[] piles;
 
     private GameOfThrones got;
+    private int[][] ranks = {{0,0}, {0,0}};
 
     private GoTCharacter[] correspondingCharacters;
     private CharacterFactory characterFactory;
@@ -54,19 +56,26 @@ public class GoTPiles {
         }
     }
 
-    public void updatePileRankState(int pileIndex, int attackRank, int defenceRank) {
+    public int[][] getPileRanks() {
+        return ranks;
+    }
+
+    public void updatePileRankState(int pileIndex, int attack, int defence) {
         TextActor currentPile = (TextActor) pileTextActors[pileIndex];
         got.removeActor(currentPile);
-        String text = GoTData.playerTeams[pileIndex] + " Attack: " + attackRank + " - Defence: " + defenceRank;
+        String text = String.format("%s Attack: %d - Defence: %d",
+                GoTData.playerTeams[pileIndex], attack, defence);
         pileTextActors[pileIndex] = new TextActor(text, Color.WHITE, got.bgColor, GoTData.smallFont);
         got.addActor(pileTextActors[pileIndex], GoTData.pileStatusLocations[pileIndex]);
     }
 
     public void updatePileRanks() {
-        for (int j = 0; j < piles.length; j++) {
-            int[] ranks = calculatePileRanks(j);
-            updatePileRankState(j, ranks[GoTData.ATTACK_RANK_INDEX], ranks[GoTData.DEFENCE_RANK_INDEX]);
+        for (int i = 0; i < piles.length; i++) {
+            ranks[i] = calculatePileRanks(i);
+            System.out.println("this is the rank for " + i + " attack: " + ranks[i][GoTData.ATTACK_RANK_INDEX] + " defence: " + ranks[i][GoTData.ATTACK_RANK_INDEX]);
+            updatePileRankState(i, ranks[i][GoTData.ATTACK_RANK_INDEX], ranks[i][GoTData.DEFENCE_RANK_INDEX]);
         }
+        super.update();
     }
     
     public void resetPile() {
@@ -102,8 +111,13 @@ public class GoTPiles {
         return correspondingCharacters[pileIndex].computeBaseCharacterRank();
     }
     
-    public void selectRandomPile() {
+    public int selectRandomPile() {
         selectedPileIndex = GoTUtilities.getRandom().nextInt(2);
+        return selectedPileIndex;
+    }
+
+    public void selectPile(int selectedPileIndex) {
+        this.selectedPileIndex = selectedPileIndex;
     }
     
     public Hand getSelectedPile() {
