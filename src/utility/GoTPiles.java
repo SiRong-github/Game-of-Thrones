@@ -72,7 +72,6 @@ public class GoTPiles extends GoTObservable {
     public void updatePileRanks() {
         for (int i = 0; i < piles.length; i++) {
             ranks[i] = calculatePileRanks(i);
-            System.out.println("this is the rank for " + i + " attack: " + ranks[i][GoTData.ATTACK_RANK_INDEX] + " defence: " + ranks[i][GoTData.ATTACK_RANK_INDEX]);
             updatePileRankState(i, ranks[i][GoTData.ATTACK_RANK_INDEX], ranks[i][GoTData.DEFENCE_RANK_INDEX]);
         }
         super.update();

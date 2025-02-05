@@ -101,26 +101,17 @@ public abstract class GoTPlayer {
             }
         }
 
-        System.out.println("isCharacter "+ isCharacter);
-        System.out.println("can't play magic "+ !canPlayMagic(turn));
-        System.out.println("shortlist "+ shortListCards);
-
         if (shortListCards.isEmpty()) {
             card = Optional.empty();
         } else {
             card = aiSuit(shortListCards, isCharacter);
         }
 
-        System.out.println("card "+ card);
-
         return card;
     }
 
     public GoTCardPilePair playCorrectCardPile(GameOfThrones got, GoTPiles gotPiles, int turn) {
         card = getCorrectSuit(false, turn);
-        System.out.println("card "+ card);
-        System.out.println("pile 0 " + gotPiles.getPile(0).getCardList());
-        System.out.println("pile 1 " + gotPiles.getPile(1).getCardList());
         if (card.isPresent()) {
             got.setStatusText("Selected: " + GoTUtilities.canonical(card.get()) + ". Player" +
                     player + " select a pile to play the card.");
@@ -129,12 +120,8 @@ public abstract class GoTPlayer {
 
             if (card.isPresent()) {
                 selectPile(gotPiles);
-                System.out.println("pile "+ pile);
                 Suit suit = (Suit) card.get().getSuit();
                 Suit prev = (Suit) gotPiles.getSelectedPile().getLast().getSuit();
-                System.out.println("card " + card);
-                System.out.println("suit " + suit);
-                System.out.println("prev " + prev);
 
                 if (prev.isCharacter() && suit.isMagic()) {
                     card = Optional.empty();

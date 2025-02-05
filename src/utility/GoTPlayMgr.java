@@ -61,7 +61,6 @@ public class GoTPlayMgr {
      */
     private void displayCard(Card card, Hand targetHand) {
         card.setVerso(false); // displays card face (front) instead of card cover
-        System.out.println("target hand " + targetHand);
         card.transfer(targetHand, true); // transfer to pile (includes graphic effect)
     }
 
@@ -110,7 +109,6 @@ public class GoTPlayMgr {
             assert selected.isPresent() : " Pass returned on selection of character.";
 
             //Play card on pile
-            System.out.println("selected " + selected);
             playCard(playerIndex, playerIndex % 2, selected.get());
         }
     }
